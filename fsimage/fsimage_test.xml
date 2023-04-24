@@ -1,8 +1,8 @@
 <fsimage>
 	<INodeSection>
-		<lastInodeId>39</lastInodeId>
-		<numInodes>38</numInodes>
-		<lastBlockId>100628</lastBlockId>
+		<lastInodeId>43</lastInodeId>
+		<numInodes>42</numInodes>
+		<lastBlockId>100632</lastBlockId>
 		<inode>
 			<id>0</id>
 			<type>DIRECTORY</type>
@@ -80,6 +80,42 @@
 				<block>
 					<id>100624</id>
 					<numBytes>3078</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>40</id>
+			<type>FILE</type>
+			<name>fsimage564.xml</name>
+			<replication>1</replication>
+			<blocks>
+				<block>
+					<id>100629</id>
+					<numBytes>16825</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>41</id>
+			<type>FILE</type>
+			<name>create.sql</name>
+			<replication>1</replication>
+			<blocks>
+				<block>
+					<id>100630</id>
+					<numBytes>569</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>42</id>
+			<type>FILE</type>
+			<name>load.py</name>
+			<replication>1</replication>
+			<blocks>
+				<block>
+					<id>100631</id>
+					<numBytes>3472</numBytes>
 				</block>
 			</blocks>
 		</inode>
@@ -182,6 +218,18 @@
 				</block>
 			</blocks>
 		</inode>
+		<inode>
+			<id>39</id>
+			<type>FILE</type>
+			<name>fsimage564.xml</name>
+			<replication>1</replication>
+			<blocks>
+				<block>
+					<id>100628</id>
+					<numBytes>16825</numBytes>
+				</block>
+			</blocks>
+		</inode>
 	</INodeSection>
 	<INodeDirectorySection>
 		<directory>
@@ -196,6 +244,7 @@
 			<child>35</child>
 			<child>36</child>
 			<child>37</child>
+			<child>39</child>
 		</directory>
 		<directory>
 			<parent>1</parent>
@@ -204,6 +253,9 @@
 			<child>9</child>
 			<child>33</child>
 			<child>34</child>
+			<child>40</child>
+			<child>41</child>
+			<child>42</child>
 		</directory>
 		<directory>
 			<parent>2</parent>

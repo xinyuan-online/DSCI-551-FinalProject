@@ -256,7 +256,7 @@ class FSTree:
         directory_section = fsimage.find('INodeDirectorySection')
         directories = directory_section.findall('directory')
         inodes = {}
-        
+        block_mapping = {}
         for node in all_nodes:
 
             node_id = int(node[0].text)
@@ -269,6 +269,8 @@ class FSTree:
                 replication = node[3].text
                 blocks = node.find('blocks')
                 blocks_info = [(int(block[0].text), int(block[1].text)) for block in blocks]
+                for block in blocks:
+                    block_mapping[int(block[0].text)] = []
                 new_node.set_blocks(blocks_info)
                 new_node.set_replication(replication)
 
@@ -291,6 +293,7 @@ class FSTree:
                 child_node = inodes[child_id]
                 insert_node(child_node, parent_node)
 
+        return block_mapping 
     def __repr__(self):
         return self.FSTree_to_xml()
 

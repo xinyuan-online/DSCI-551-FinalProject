@@ -3,6 +3,8 @@ from aiohttp import web
 import random
 import json
 import logging
+import requests
+import time
 from ..FSTree.FSTree import Inode, INodeError, FSTree, parse_path, INVALID_PATH_ERROR
 
 routes = web.RouteTableDef()
@@ -11,7 +13,7 @@ class NameNode():
     def __init__(self, hostname, port, blocksize, replicationfactor, datanode_info, home_path):
         self.fstree = FSTree()
         self.info = (hostname, port)
-        self.datanodes_avaliable = [x[0] for x in datanode_info['nodes']]
+        self.datanodes_avaliable = datanode_info['nodes']
         self.replication_factor = replicationfactor
         self.block_size = blocksize
         self.home_path = home_path
@@ -36,7 +38,7 @@ class NameNode():
 
 
     def choose_datanodes(self, count):
-        datanodes = self.datanodes_avaliable
+        datanodes = [x[0] for x in self.datanodes_avaliable]
         if count > len(datanodes):
             return datanodes, len(datanodes)
         choice = random.choices(datanodes, k=count)
@@ -44,8 +46,20 @@ class NameNode():
         
 
     def initialize(self):
-        self.fstree.load_xml(self.fsimage_path)
-
+        self.block_mapping = self.fstree.load_xml(self.fsimage_path)
+        time.sleep(0.2)
+        for datanode in self.datanodes_avaliable:
+            url = f"http://{datanode[1]}:{datanode[2]}/blockreport"
+            resp = requests.get(url).json()
+            for block_id in resp:
+                try:
+                    self.block_mapping[int(block_id)].append(datanode[0])
+                except KeyError:
+                    #block not found in filesystem metadata, remove the block
+                    delete_url = f"http://{datanode[1]}:{datanode[2]}/remove/{block_id}"
+                    d_resp = requests.delete(delete_url)
+        print(self.block_mapping)
+            
 
     async def ls(self, req):
         '''
@@ -165,7 +179,6 @@ class NameNode():
         new_node.set_replication(block_count)
 
         self.fstree.insert(new_node, parent_path)
-       
         return web.Response(status=200, text="Successfully put file")
             
             
