@@ -1,8 +1,8 @@
 <fsimage>
 	<INodeSection>
-		<lastInodeId>33</lastInodeId>
-		<numInodes>32</numInodes>
-		<lastBlockId>100623</lastBlockId>
+		<lastInodeId>35</lastInodeId>
+		<numInodes>34</numInodes>
+		<lastBlockId>100625</lastBlockId>
 		<inode>
 			<id>0</id>
 			<type>DIRECTORY</type>
@@ -56,6 +56,30 @@
 				<block>
 					<id>100002</id>
 					<numBytes>600</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>33</id>
+			<type>FILE</type>
+			<name>README.md</name>
+			<replication>1</replication>
+			<blocks>
+				<block>
+					<id>100623</id>
+					<numBytes>155</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>34</id>
+			<type>FILE</type>
+			<name>.gitignore</name>
+			<replication>1</replication>
+			<blocks>
+				<block>
+					<id>100624</id>
+					<numBytes>3078</numBytes>
 				</block>
 			</blocks>
 		</inode>
@@ -134,6 +158,8 @@
 			<child>2</child>
 			<child>6</child>
 			<child>9</child>
+			<child>33</child>
+			<child>34</child>
 		</directory>
 		<directory>
 			<parent>2</parent>

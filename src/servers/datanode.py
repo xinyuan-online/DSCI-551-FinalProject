@@ -9,10 +9,12 @@ def parse_message(message):
 
 
 class DataNode:
-    def __init__(self):
-        self.id = sys.argv[1]
-        self.local_storage_base_path = f"~/Project-edfs/{self.id}"
-        self.info = ('127.0.0.1', sys.argv[2])
+    def __init__(self, id, hostname, port, local_storage_path, home_path):
+        self.id = id
+        self.local_storage_base_path = f"{local_storage_path}/{self.id}"
+        print(self.local_storage_base_path)
+        self.info = (hostname, port)
+        self.home_path = home_path
 
     def launch_server(self):
         app = web.Application()
@@ -27,9 +29,9 @@ class DataNode:
         block_id = data["block_id"]
         replica = data["replica"]
         block_content = base64.b64decode(data["block_content"].encode('ascii'))
-        if not os.path.exists(f'./{self.id}'):
-            os.makedirs(f'./{self.id}')
-        with open(f"./{self.id}/{block_id}-r{replica}", 'wb') as block_writer:
+        if not os.path.exists(f'{self.local_storage_base_path}'):
+            os.makedirs(f'{self.local_storage_base_path}')
+        with open(f"{self.local_storage_base_path}/{block_id}-r{replica}", 'wb') as block_writer:
             block_writer.write(block_content)
         return web.Response(status=200, text=f"block {block_id} replica {replica} written succesfully")
 
@@ -39,7 +41,11 @@ class DataNode:
     async def block_report(self):
         pass
 
+def run_datanode(*args):
+    try:
+        dn = DataNode(*args)
+        dn.launch_server()
+    except KeyboardInterrupt:
+        print("Interrupted")
 
-if __name__ == "__main__":
-    dn = DataNode()
-    dn.launch_server()
+    

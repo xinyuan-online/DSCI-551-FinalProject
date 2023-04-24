@@ -3,28 +3,27 @@ from aiohttp import web
 import random
 import json
 import logging
-from FSTree import FSTree, Inode, INodeError
-import FSTree as fst
+from ..FSTree.FSTree import Inode, INodeError, FSTree, parse_path, INVALID_PATH_ERROR
 
 routes = web.RouteTableDef()
 
 class NameNode():
-    def __init__(self):
+    def __init__(self, hostname, port, blocksize, replicationfactor, datanode_info, home_path):
         self.fstree = FSTree()
-        self.info = ('127.0.0.1', 10001)
-        self.datanodes_avaliable = ['datanode_1', 'datanode_2']
-        self.client_info = ('127.0.0.1', 10000)
-        self.replication_factor = 3
-        self.block_size = 64 * 1024 * 1024
-
+        self.info = (hostname, port)
+        self.datanodes_avaliable = [x[0] for x in datanode_info['nodes']]
+        self.replication_factor = replicationfactor
+        self.block_size = blocksize
+        self.home_path = home_path
         # {id: [datanodes that hold the replica]}
         self.block_mapping = {}
         self.request_methods = {
             "ls": self.ls,
             "put": self.put,
         }
-        logging.basicConfig(filename='namenode.log', encoding='utf-8', level=logging.DEBUG)
-
+        logging.basicConfig(filename=f'{self.home_path}/logs/namenode.log', 
+                            encoding='utf-8', level=logging.DEBUG)
+        self.fsimage_path = f"{self.home_path}/fsimage/fsimage_test.xml"
 
     def launch_server(self):
         logging.info(f'Listening on port {self.info[1]}')
@@ -45,7 +44,7 @@ class NameNode():
         
 
     def initialize(self):
-        self.fstree.load_xml("fsimage_test.xml")
+        self.fstree.load_xml(self.fsimage_path)
 
 
     async def ls(self, req):
@@ -55,7 +54,7 @@ class NameNode():
         '''
         try:
             path_to_ls = req.query['path']
-            path_lst = fst.parse_path(path_to_ls)
+            path_lst = parse_path(path_to_ls)
             fount_node = None
             found_node = self.fstree.find(path_lst)
             if found_node.node_type != "DIRECTORY":
@@ -70,9 +69,9 @@ class NameNode():
         try:
             req_body = await req.json()
             
-            dest_path = fst.parse_path(req_body["path"])
+            dest_path = parse_path(req_body["path"])
             if len(dest_path) == 0:
-                raise INodeError("Given path is invalid", fst.INVALID_PATH_ERROR)
+                raise INodeError("Given path is invalid", INVALID_PATH_ERROR)
             dir_name = dest_path[-1]
             parent_path = dest_path[:-1]
             new_dir_node = Inode(dir_name, "DIRECTORY")
@@ -109,7 +108,7 @@ class NameNode():
             path_to_put = req_body["path"]
             block_count = (item_size // self.block_size) + 1
             
-            parent_path = fst.parse_path(path_to_put)
+            parent_path = parse_path(path_to_put)
             new_node = Inode(item_name, "FILE")
             self.fstree.insert(new_node, parent_path, attempt=True)
         except INodeError as e:
@@ -153,7 +152,7 @@ class NameNode():
         block_count = allocation["block_count"]
         block_info = allocation["block_info"]
         
-        parent_path = fst.parse_path(path_to_put)
+        parent_path = parse_path(path_to_put)
         new_node = Inode(item_name, "FILE")
 
         for block in block_info:
@@ -171,7 +170,8 @@ class NameNode():
             
             
     def close_server(self):
-        self.fstree.save_fs_to_fsimage("fsimage_test.xml")
+        self.fstree.save_fs_to_fsimage(self.fsimage_path)
+        logging.info('Namenode metadata saved to fsimage_test.xml')
 
     '''
     async def handle_client_request(self, reader, writer):
@@ -193,8 +193,9 @@ class NameNode():
             await writer.wait_closed()
             logging.info('Connection with client terminated.')
     '''
-if __name__ == "__main__":
-    namenode_instance = NameNode()
+
+def run_namenode(*args):
+    namenode_instance = NameNode(*args)
     namenode_instance.initialize()
 
     try:
@@ -203,4 +204,5 @@ if __name__ == "__main__":
         print("Interrupted")
     finally:
         namenode_instance.close_server()
-        logging.info('Namenode metadata saved to fsimage_test.xml')
+    
+        

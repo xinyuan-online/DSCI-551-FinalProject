@@ -6,28 +6,31 @@ import os
 import json
 import base64
 from urllib.parse import quote_plus as urlencode
-
+from start_dfs import get_config
 
 class edfs_client:
 
     def __init__(self):
+        namenode_info, datanode_info = get_config()
         self.namenode_session = None
-        self.datanode_session = None
+        self.datanode_sessions = None
         self.handle_request_methods = {
             "ls": self.handle_ls,
             "put": self.handle_put,
             "mkdir": self.handle_mkdir
         }
-        self.datanodes_info = {'datanode_1': ("127.0.0.1", 10002), 
-                            'datanode_2': ("127.0.0.1", 10003)
-                            }
+        self.namenode_info = (namenode_info[0], namenode_info[1])
+        self.datanodes_info = [(nodeid, (hostname, port))
+                                for nodeid, hostname, port 
+                                in datanode_info['nodes']]
 
 
     async def initialize(self):
-        self.namenode_session = aiohttp.ClientSession('http://127.0.0.1:10001')
-        self.datanode_sessions = {'datanode_1': aiohttp.ClientSession('http://127.0.0.1:10002'),
-                                'datanode_2':aiohttp.ClientSession('http://127.0.0.1:10003') }
-
+        self.namenode_session = \
+            aiohttp.ClientSession(f'http://{self.namenode_info[0]}:{self.namenode_info[1]}')
+        self.datanode_sessions = \
+            {d[0]: aiohttp.ClientSession(f'http://{d[1][0]}:{d[1][1]}') 
+            for d in self.datanodes_info}
     async def close(self):
         if not self.namenode_session.closed:
             await self.namenode_session.close()
@@ -130,8 +133,8 @@ async def run_client():
             print(f"Error {resp_code}: {resp_content}")
         else:
             print(resp_content)
-    except ConnectionRefusedError:
-        print("Connection refused")
+    except aiohttp.client_exceptions.ClientConnectorError as e:
+        print(e)
     finally:
         await client.close()
 
