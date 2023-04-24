@@ -1,8 +1,8 @@
 <fsimage>
 	<INodeSection>
-		<lastInodeId>35</lastInodeId>
-		<numInodes>34</numInodes>
-		<lastBlockId>100625</lastBlockId>
+		<lastInodeId>36</lastInodeId>
+		<numInodes>35</numInodes>
+		<lastBlockId>100626</lastBlockId>
 		<inode>
 			<id>0</id>
 			<type>DIRECTORY</type>
@@ -141,6 +141,18 @@
 			<type>DIRECTORY</type>
 			<name>test1</name>
 		</inode>
+		<inode>
+			<id>35</id>
+			<type>FILE</type>
+			<name>.gitignore</name>
+			<replication>1</replication>
+			<blocks>
+				<block>
+					<id>100625</id>
+					<numBytes>3078</numBytes>
+				</block>
+			</blocks>
+		</inode>
 	</INodeSection>
 	<INodeDirectorySection>
 		<directory>
@@ -152,6 +164,7 @@
 			<child>30</child>
 			<child>31</child>
 			<child>32</child>
+			<child>35</child>
 		</directory>
 		<directory>
 			<parent>1</parent>

@@ -1,5 +1,4 @@
 # DSCI-551-FinalProject
-python3 namenode.py </br>
-python3 datanode.py datanode_1 10002 </br>
-python3 datanode.py datanode_2 10003 </br>
-python3 edfs -ls /
+edit configuration files in conf/</br>
+python3 start_dfs.py </br>
+./edfs -ls /
