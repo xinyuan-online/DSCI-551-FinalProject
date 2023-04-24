@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+p="/usr/bin/python3 $(dirname "$(dirname $0)")/start_dfs.py"
+screen -S edfs_servers -m $p

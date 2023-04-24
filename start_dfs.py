@@ -14,8 +14,8 @@ def get_namenode_info(xmlnode):
 def get_datanode_info(xmlnode):
     return xmlnode.find('id').text, xmlnode.find('hostname').text, int(xmlnode.find('port').text)
 
-def get_config():
-    configuration = ET.parse('./conf/configuration.xml').getroot()
+def get_config(homepath):
+    configuration = ET.parse(f'{homepath}/conf/configuration.xml').getroot()
     namenode = configuration.find('namenode')
     namenode_info = get_namenode_info(namenode)
     datanodes = configuration.find('datanodes')
@@ -28,8 +28,9 @@ def get_config():
 
 
 if __name__ == "__main__":
-    namenode_info, datanodes_info = get_config()
     homepath = os.path.dirname(os.path.realpath(__file__))
+    namenode_info, datanodes_info = get_config(homepath)
+    
     p = Process(target=nn.run_namenode,
                 args=(*namenode_info, datanodes_info, homepath))
     datanodes_proc = []

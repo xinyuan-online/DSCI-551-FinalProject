@@ -11,7 +11,8 @@ from start_dfs import get_config
 class edfs_client:
 
     def __init__(self):
-        namenode_info, datanode_info = get_config()
+        homepath = os.path.dirname(os.path.realpath(__file__))
+        namenode_info, datanode_info = get_config(homepath)
         self.namenode_session = None
         self.datanode_sessions = None
         self.handle_request_methods = {
@@ -55,8 +56,9 @@ class edfs_client:
             return resp.status, await resp.text()
 
     async def put_single_file(self, src_path, dest_path):
-        file_name = os.path.basename(src_path)
-        file_size = os.path.getsize(src_path)
+        abs_path = os.path.abspath(src_path)
+        file_name = os.path.basename(abs_path)
+        file_size = os.path.getsize(abs_path)
         allocation_request = {
             'name': file_name,
             'size': file_size,

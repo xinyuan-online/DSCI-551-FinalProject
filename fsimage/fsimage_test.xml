@@ -1,8 +1,8 @@
 <fsimage>
 	<INodeSection>
-		<lastInodeId>36</lastInodeId>
-		<numInodes>35</numInodes>
-		<lastBlockId>100626</lastBlockId>
+		<lastInodeId>39</lastInodeId>
+		<numInodes>38</numInodes>
+		<lastBlockId>100628</lastBlockId>
 		<inode>
 			<id>0</id>
 			<type>DIRECTORY</type>
@@ -153,6 +153,35 @@
 				</block>
 			</blocks>
 		</inode>
+		<inode>
+			<id>36</id>
+			<type>FILE</type>
+			<name>.bashrc</name>
+			<replication>1</replication>
+			<blocks>
+				<block>
+					<id>100626</id>
+					<numBytes>3977</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>37</id>
+			<type>DIRECTORY</type>
+			<name>abc</name>
+		</inode>
+		<inode>
+			<id>38</id>
+			<type>FILE</type>
+			<name>fsimage564.xml</name>
+			<replication>1</replication>
+			<blocks>
+				<block>
+					<id>100627</id>
+					<numBytes>16825</numBytes>
+				</block>
+			</blocks>
+		</inode>
 	</INodeSection>
 	<INodeDirectorySection>
 		<directory>
@@ -165,6 +194,8 @@
 			<child>31</child>
 			<child>32</child>
 			<child>35</child>
+			<child>36</child>
+			<child>37</child>
 		</directory>
 		<directory>
 			<parent>1</parent>
@@ -187,6 +218,10 @@
 		</directory>
 		<directory>
 			<parent>32</parent>
+		</directory>
+		<directory>
+			<parent>37</parent>
+			<child>38</child>
 		</directory>
 	</INodeDirectorySection>
 </fsimage>
