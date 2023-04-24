@@ -18,7 +18,9 @@ class edfs_client:
         self.handle_request_methods = {
             "ls": self.handle_ls,
             "put": self.handle_put,
-            "mkdir": self.handle_mkdir
+            "mkdir": self.handle_mkdir,
+            "rm": self.handle_rm,
+            "rmdir": self.handle_rmdir
         }
         self.namenode_info = (namenode_info[0], namenode_info[1])
         self.datanodes_info = [(nodeid, (hostname, port))
@@ -53,6 +55,20 @@ class edfs_client:
             'path': path
         }
         async with self.namenode_session.put('/mkdir', json=mkdir_request) as resp:
+            return resp.status, await resp.text()
+
+    async def handle_rm(self, path):
+        rm_request = {
+            'path': path
+        }
+        async with self.namenode_session.delete('/rm', json=rm_request) as resp:
+            return resp.status, await resp.text()
+
+    async def handle_rmdir(self, path):
+        rmdir_request = {
+            'path': path
+        }
+        async with self.namenode_session.delete('/rmdir', json=rmdir_request) as resp:
             return resp.status, await resp.text()
 
     async def put_single_file(self, src_path, dest_path):
@@ -113,7 +129,8 @@ class edfs_client:
         group.add_argument('-ls', nargs=1)
         group.add_argument('-mkdir', nargs=1)
         group.add_argument('-put', nargs=2)
-        group.add_argument('-delete', nargs=1)
+        group.add_argument('-rm', nargs=1)
+        group.add_argument('-rmdir', nargs=1)
         args = parser.parse_args().__dict__
         for k, v in args.items():
             if v == None:

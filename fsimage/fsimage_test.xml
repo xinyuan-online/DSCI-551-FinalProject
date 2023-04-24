@@ -1,8 +1,8 @@
 <fsimage>
 	<INodeSection>
-		<lastInodeId>43</lastInodeId>
-		<numInodes>42</numInodes>
-		<lastBlockId>100632</lastBlockId>
+		<lastInodeId>45</lastInodeId>
+		<numInodes>41</numInodes>
+		<lastBlockId>100633</lastBlockId>
 		<inode>
 			<id>0</id>
 			<type>DIRECTORY</type>
@@ -44,18 +44,6 @@
 				<block>
 					<id>100001</id>
 					<numBytes>500</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
-			<id>9</id>
-			<type>FILE</type>
-			<name>namenode.log</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100002</id>
-					<numBytes>600</numBytes>
 				</block>
 			</blocks>
 		</inode>
@@ -250,7 +238,6 @@
 			<parent>1</parent>
 			<child>2</child>
 			<child>6</child>
-			<child>9</child>
 			<child>33</child>
 			<child>34</child>
 			<child>40</child>

@@ -33,7 +33,9 @@ class NameNode():
         app.add_routes([web.get('/ls', self.ls),
                         web.put('/put', self.put),
                         web.put('/allocate', self.allocate_block),
-                        web.put('/mkdir', self.mkdir)])
+                        web.put('/mkdir', self.mkdir),
+                        web.delete('/rm', self.rm),
+                        web.delete('/rmdir', self.rmdir)])
         web.run_app(app, host=self.info[0], port=self.info[1])
 
 
@@ -60,6 +62,39 @@ class NameNode():
                     d_resp = requests.delete(delete_url)
         print(self.block_mapping)
             
+
+    async def rm(self, req):
+        req_body = await req.json()
+        path = req_body['path']
+
+        try: 
+            path_lst = parse_path(path)
+            target_file = self.fstree.find(path_lst)
+
+            if target_file.node_type == "DIRECTORY":
+                return web.Response(status=405, text="Cannot rm a directory")
+            self.fstree.remove(path_lst)
+        except INodeError as e:
+            return web.Response(status=e.error_code, text=str(e))
+        else:
+            return web.Response(text='File removed from filesystem')
+
+    async def rmdir(self, req):
+        req_body = await req.json()
+        path = req_body['path']
+
+        try: 
+            path_lst = parse_path(path)
+            target_file = self.fstree.find(path_lst)
+
+            if target_file.node_type == "FILE":
+                return web.Response(status=405, text="Cannot rmdir a file")
+            self.fstree.remove(path_lst)
+        except INodeError as e:
+            return web.Response(status=e.error_code, text=str(e))
+        else:
+            return web.Response(text='Directory removed from filesystem')
+
 
     async def ls(self, req):
         '''
