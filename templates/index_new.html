@@ -95,7 +95,7 @@
         {% for item in existing_files %}
         {% if item["type"] == "DIRECTORY" %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
-            <a href="{{ url_for('folder_contents', item_path=item['path']) }}">{{ item['name'] }}</a>
+            <a href="{{ url_for('folder_contents', item_path=item['path']) }}">{{ item['name']+'/' }}</a>
             <a href="{{ url_for('delete_folder', item_path=item['path']) }}" class="badge badge-danger">[Delete]</a>
         </li>
         {% else %}

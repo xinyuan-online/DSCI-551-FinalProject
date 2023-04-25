@@ -3,6 +3,7 @@ import asyncio
 import xml.etree.ElementTree as ET
 import sys
 import os
+import time
 import src.servers.namenode as nn
 import src.servers.datanode as dn
 from multiprocessing import Process
@@ -44,6 +45,7 @@ if __name__ == "__main__":
     
     for d in datanodes_proc:
         d.start()
+    time.sleep(5)
     p.start()
     try:
         while True:
