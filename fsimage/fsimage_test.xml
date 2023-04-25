@@ -1,8 +1,8 @@
 <fsimage>
 	<INodeSection>
-		<lastInodeId>45</lastInodeId>
-		<numInodes>41</numInodes>
-		<lastBlockId>100633</lastBlockId>
+		<lastInodeId>51</lastInodeId>
+		<numInodes>30</numInodes>
+		<lastBlockId>100640</lastBlockId>
 		<inode>
 			<id>0</id>
 			<type>DIRECTORY</type>
@@ -36,158 +36,14 @@
 			<name>fran</name>
 		</inode>
 		<inode>
-			<id>6</id>
-			<type>FILE</type>
-			<name>abc.txt</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100001</id>
-					<numBytes>500</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
-			<id>33</id>
-			<type>FILE</type>
-			<name>README.md</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100623</id>
-					<numBytes>155</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
-			<id>34</id>
-			<type>FILE</type>
-			<name>.gitignore</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100624</id>
-					<numBytes>3078</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
-			<id>40</id>
-			<type>FILE</type>
-			<name>fsimage564.xml</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100629</id>
-					<numBytes>16825</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
-			<id>41</id>
-			<type>FILE</type>
-			<name>create.sql</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100630</id>
-					<numBytes>569</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
-			<id>42</id>
-			<type>FILE</type>
-			<name>load.py</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100631</id>
-					<numBytes>3472</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
 			<id>7</id>
 			<type>DIRECTORY</type>
 			<name>abcdsfg</name>
 		</inode>
 		<inode>
-			<id>28</id>
-			<type>FILE</type>
-			<name>namenode.log</name>
-			<replication>2</replication>
-			<blocks>
-				<block>
-					<id>100614</id>
-					<numBytes>39209</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
-			<id>29</id>
-			<type>FILE</type>
-			<name>protocol.py</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100620</id>
-					<numBytes>1247</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
-			<id>30</id>
-			<type>FILE</type>
-			<name>hello.py</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100621</id>
-					<numBytes>176</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
-			<id>31</id>
-			<type>FILE</type>
-			<name>helloclient.py</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100622</id>
-					<numBytes>371</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
 			<id>32</id>
 			<type>DIRECTORY</type>
 			<name>test1</name>
-		</inode>
-		<inode>
-			<id>35</id>
-			<type>FILE</type>
-			<name>.gitignore</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100625</id>
-					<numBytes>3078</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
-			<id>36</id>
-			<type>FILE</type>
-			<name>.bashrc</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100626</id>
-					<numBytes>3977</numBytes>
-				</block>
-			</blocks>
 		</inode>
 		<inode>
 			<id>37</id>
@@ -207,14 +63,26 @@
 			</blocks>
 		</inode>
 		<inode>
-			<id>39</id>
+			<id>49</id>
 			<type>FILE</type>
-			<name>fsimage564.xml</name>
+			<name>README.md</name>
 			<replication>1</replication>
 			<blocks>
 				<block>
-					<id>100628</id>
-					<numBytes>16825</numBytes>
+					<id>100638</id>
+					<numBytes>438</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>50</id>
+			<type>FILE</type>
+			<name>requirement.txt</name>
+			<replication>1</replication>
+			<blocks>
+				<block>
+					<id>100639</id>
+					<numBytes>26100</numBytes>
 				</block>
 			</blocks>
 		</inode>
@@ -224,25 +92,14 @@
 			<parent>0</parent>
 			<child>1</child>
 			<child>7</child>
-			<child>28</child>
-			<child>29</child>
-			<child>30</child>
-			<child>31</child>
 			<child>32</child>
-			<child>35</child>
-			<child>36</child>
 			<child>37</child>
-			<child>39</child>
+			<child>49</child>
+			<child>50</child>
 		</directory>
 		<directory>
 			<parent>1</parent>
 			<child>2</child>
-			<child>6</child>
-			<child>33</child>
-			<child>34</child>
-			<child>40</child>
-			<child>41</child>
-			<child>42</child>
 		</directory>
 		<directory>
 			<parent>2</parent>

@@ -7,14 +7,15 @@ import src.servers.namenode as nn
 import src.servers.datanode as dn
 from multiprocessing import Process
 
-def get_namenode_info(xmlnode):
-    return (xmlnode.find('hostname').text, int(xmlnode.find('port').text), 
-        int(xmlnode.find('blockSize').text),int(xmlnode.find('replicationFactor').text))
 
-def get_datanode_info(xmlnode):
-    return xmlnode.find('id').text, xmlnode.find('hostname').text, int(xmlnode.find('port').text)
 
 def get_config(homepath):
+    def get_namenode_info(xmlnode):
+        return (xmlnode.find('hostname').text, int(xmlnode.find('port').text), 
+        int(xmlnode.find('blockSize').text),int(xmlnode.find('replicationFactor').text))
+
+    def get_datanode_info(xmlnode):
+        return xmlnode.find('id').text, xmlnode.find('hostname').text, int(xmlnode.find('port').text)
     configuration = ET.parse(f'{homepath}/conf/configuration.xml').getroot()
     namenode = configuration.find('namenode')
     namenode_info = get_namenode_info(namenode)
@@ -40,10 +41,10 @@ if __name__ == "__main__":
         #dn.run_datanode(*node_info, datanodes_info['storage'], homepath)
 
 
-    p.start()
+    
     for d in datanodes_proc:
         d.start()
-    
+    p.start()
     try:
         while True:
             pass

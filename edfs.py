@@ -6,9 +6,27 @@ import os
 import json
 import base64
 from urllib.parse import quote_plus as urlencode
-from start_dfs import get_config
+import xml.etree.ElementTree as ET
 
-class edfs_client:
+def get_config(homepath):
+    def get_namenode_info(xmlnode):
+        return (xmlnode.find('hostname').text, int(xmlnode.find('port').text), 
+        int(xmlnode.find('blockSize').text),int(xmlnode.find('replicationFactor').text))
+
+    def get_datanode_info(xmlnode):
+        return xmlnode.find('id').text, xmlnode.find('hostname').text, int(xmlnode.find('port').text)
+    configuration = ET.parse(f'{homepath}/conf/configuration.xml').getroot()
+    namenode = configuration.find('namenode')
+    namenode_info = get_namenode_info(namenode)
+    datanodes = configuration.find('datanodes')
+    datanodes_info = {
+        'storage': datanodes.find('localStorage'),
+        'nodes': [get_datanode_info(datanode) for datanode in datanodes.findall('datanode')]
+    }
+    return namenode_info, datanodes_info
+
+
+class EdfsClient:
 
     def __init__(self):
         homepath = os.path.dirname(os.path.realpath(__file__))
@@ -42,7 +60,8 @@ class edfs_client:
 
 
     async def handle_ls(self, path_to_ls):
-        encoded_path_to_ls = urlencode(path_to_ls)
+        print(path_to_ls)
+        #encoded_path_to_ls = urlencode(path_to_ls)
         async with self.namenode_session.get(f'/ls', params={"path": path_to_ls}) as resp:
             return resp.status, await resp.text()
 
@@ -143,7 +162,7 @@ class edfs_client:
 
 
 async def run_client():
-    client = edfs_client()
+    client = EdfsClient()
     try:
         await client.initialize()
         command, arguments = await client.parse_user_input()
@@ -156,6 +175,7 @@ async def run_client():
         print(e)
     finally:
         await client.close()
+
 
 if __name__ == "__main__":
     asyncio.run(run_client())

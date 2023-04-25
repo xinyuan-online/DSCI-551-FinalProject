@@ -1,0 +1,51 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>EDFS Web UI</title>
+    <style>
+      .folder {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Upload a file</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <input type="hidden" name="folder_name" value="{{ folder_name }}"> <!-- Add this line -->
+    <input type="submit" value="Upload">
+    </form>
+
+    <h1>Existing files and folders</h1>
+    {% if folder_name %}
+    <a href="javascript:history.back()">Back to the parent folder</a>
+    {% endif %}
+
+    <ul>
+    {% for item in existing_files %}
+      {% if item["type"] == "DIRECTORY" %}
+        <li>
+          <a href="{{ url_for('folder_contents', item_path=item['path']) }}">{{ item['name'] }}</a>
+          <a href="{{ url_for('delete_folder', item_path=item['path']) }}" style="color: red;">[Delete]</a>
+        </li>
+      {% else %}
+        <li>
+          <a href="{{ url_for('download_file', item_path=item['path']) }}">{{ item['name'] }}</a>
+          <a href="{{ url_for('delete_item', item_path=item['path']) }}" style="color: red;">[Delete]</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+    </ul>
+
+    <h2>Create Folder</h2>
+
+    <form action="{{ url_for('create_folder') }}" method="post">
+      <input type="hidden" name="path" value="{{ folder_name }}">  <!-- Add this line -->
+      <input type="text" name="folder_name" placeholder="Folder Name" required>
+      <input type="submit" value="Create Folder">
+    </form>
+
+
+  </body>
+</html>

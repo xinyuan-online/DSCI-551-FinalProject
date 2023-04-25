@@ -38,12 +38,14 @@ class DataNode:
             os.remove(f)
         return web.Response(status=200, text=f"Blocks successfully removed")
     async def write_block(self, req):
+        
         data = await req.json()
         block_id = data["block_id"]
         replica = data["replica"]
         block_content = base64.b64decode(data["block_content"].encode('ascii'))
         if not os.path.exists(self.local_storage_base_path):
             os.makedirs(self.local_storage_base_path)
+        print(f"datanode {self.id} storing at {self.local_storage_base_path}")
         with open(f"{self.local_storage_base_path}/{block_id}-r{replica}", 'wb') as block_writer:
             block_writer.write(block_content)
         return web.Response(status=200, text=f"block {block_id} replica {replica} written succesfully")
@@ -53,7 +55,7 @@ class DataNode:
         pass
     async def block_report(self, req):
         if not os.path.exists(self.local_storage_base_path):
-            return web.Response(status=200, text=json.loads([]))
+            return web.Response(status=200, text=json.dumps([]))
         blocks_holding = [block_filename.split('-')[0] 
                             for block_filename 
                             in os.listdir(self.local_storage_base_path)]

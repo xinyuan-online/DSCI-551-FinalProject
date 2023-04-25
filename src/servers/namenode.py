@@ -43,13 +43,13 @@ class NameNode():
         datanodes = [x[0] for x in self.datanodes_avaliable]
         if count > len(datanodes):
             return datanodes, len(datanodes)
-        choice = random.choices(datanodes, k=count)
+        random.shuffle(datanodes)
+        choice = datanodes[:count]
         return choice, count
         
 
     def initialize(self):
         self.block_mapping = self.fstree.load_xml(self.fsimage_path)
-        time.sleep(0.2)
         for datanode in self.datanodes_avaliable:
             url = f"http://{datanode[1]}:{datanode[2]}/blockreport"
             resp = requests.get(url).json()
@@ -60,7 +60,6 @@ class NameNode():
                     #block not found in filesystem metadata, remove the block
                     delete_url = f"http://{datanode[1]}:{datanode[2]}/remove/{block_id}"
                     d_resp = requests.delete(delete_url)
-        print(self.block_mapping)
             
 
     async def rm(self, req):
@@ -111,7 +110,10 @@ class NameNode():
         except INodeError as e:
             return web.Response(status=e.error_code, text=str(e))
         else:
-            return web.Response(text=found_node.display_child())
+            response = [{"name": x.node_name, 
+                        "type": x.node_type} 
+                        for x in found_node.childs]
+            return web.Response(text=json.dumps(response))
 
 
     async def mkdir(self, req):
