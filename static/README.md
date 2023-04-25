@@ -1,1 +1,1 @@
-Here is the materials for the index.
+Here are the materials for the index.
