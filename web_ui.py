@@ -37,12 +37,18 @@ async def create_folder():
             }
             for file in metadata_server.exposed_ls(path)
         ]
-        return await render_template('index.html', existing_files=existing_files, folder_name=path)
+        return await render_template('index_new.html', existing_files=existing_files, folder_name=path)
     return "Invalid folder name"
 
 @app.route("/deletefolder/<item_path>")
 async def delete_folder(item_path):
-    pass
+    unquoted_path = urlunquote(item_path)
+    code, resp = await app.client.handle_user_request("rmdir", ['/'+ unquoted_path])
+    slash_index = unquoted_path.rfind('/')
+
+    parent = urlquote(unquoted_path[:slash_index] if slash_index != -1 else '/')
+    return redirect(url_for('folder_contents', item_path=parent))
+
 
 @app.route("/delete/<item_path>")
 async def delete_item(item_path):
@@ -50,7 +56,7 @@ async def delete_item(item_path):
     code, resp = await app.client.handle_user_request("rm", ['/'+ unquoted_path])
     slash_index = unquoted_path.rfind('/')
 
-    parent = unquoted_path[:slash_index] if slash_index != -1 else '/'
+    parent = urlquote(unquoted_path[:slash_index] if slash_index != -1 else '/')
     return redirect(url_for('folder_contents', item_path=parent))
 
 
@@ -68,7 +74,7 @@ async def index(path=""):
         for file in folder_contents
     ]
     logging.info(existing_files)
-    return await render_template("index.html", existing_files=existing_files)
+    return await render_template("index_new.html", existing_files=existing_files)
 
 
 @app.route('/folder/')
@@ -90,7 +96,7 @@ async def folder_contents(item_path):
         for file in folder_contents
     ]
     return await render_template(
-        "index.html", existing_files=existing_files, folder_name=item_path
+        "index_new.html", existing_files=existing_files, folder_name=item_path
     )
 
 @app.route('/upload', methods=['POST'])
@@ -117,7 +123,7 @@ async def upload_file():
             for file in metadata_server.exposed_ls(folder_name)
         ]
 
-        return await render_template('index.html', existing_files=existing_files, folder_name=folder_name if folder_name else None)
+        return await render_template('index_new.html', existing_files=existing_files, folder_name=folder_name if folder_name else None)
 
     return "Invalid file or filename", 400
 

@@ -37,6 +37,7 @@ class DataNode:
         for f in glob.glob(f"{self.local_storage_base_path}/{block_id}-r*"):
             os.remove(f)
         return web.Response(status=200, text=f"Blocks successfully removed")
+   
     async def write_block(self, req):
         
         data = await req.json()
