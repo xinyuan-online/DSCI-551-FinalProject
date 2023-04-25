@@ -39,7 +39,8 @@ class EdfsClient:
             "put": self.handle_put,
             "mkdir": self.handle_mkdir,
             "rm": self.handle_rm,
-            "rmdir": self.handle_rmdir
+            "rmdir": self.handle_rmdir,
+            "get": self.handle_get
         }
         self.namenode_info = (namenode_info[0], namenode_info[1])
         self.datanodes_info = [(nodeid, (hostname, port))
@@ -63,8 +64,31 @@ class EdfsClient:
 
     async def handle_ls(self, path_to_ls):
         #encoded_path_to_ls = urlencode(path_to_ls)
-        async with self.namenode_session.get(f'/ls', params={"path": path_to_ls}) as resp:
+        async with self.namenode_session.get('/ls', params={"path": path_to_ls}) as resp:
             return resp.status, await resp.text()
+
+    async def handle_get(self, path_to_get):
+        block_composition = []
+        async with self.namenode_session.get('/get', params={"path": path_to_get}) as resp:
+            resp_text = await resp.text()
+            if resp.status != 200:
+                return resp.status, resp_text
+            block_composition = json.loads(resp_text)
+        block_bytes = b""
+        for block in block_composition:
+            block_id = block["block_id"]
+            for avaliable_datanode in block["block_mapping"]:
+                session = self.datanode_sessions[avaliable_datanode]
+                async with session.get('/read', params={"id": block_id}) as r_resp:
+                    if r_resp.status != 200:
+                        continue
+                    content_stream = r_resp.content
+                    content = await content_stream.read(-1)
+                    block_bytes += content
+                    break
+                return 404, "Block broken"
+        return 200, block_bytes
+                    
 
 
     async def handle_put(self, *args):
@@ -134,7 +158,7 @@ class EdfsClient:
                     writeblock_body = {
                         "block_id": block_id,
                         "replica": replica,
-                        "block_content": base64.b64encode(chunk).decode("ascii")
+                        "block_content": base64.b64encode(chunk).decode("utf-8")
                     }
                     async with self.datanode_sessions[datanode_id].post(f'/write', json=writeblock_body) as d_resp:
                         if d_resp.status != 200:

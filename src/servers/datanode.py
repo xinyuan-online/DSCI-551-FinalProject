@@ -43,7 +43,8 @@ class DataNode:
         data = await req.json()
         block_id = data["block_id"]
         replica = data["replica"]
-        block_content = base64.b64decode(data["block_content"].encode('ascii'))
+        block_content = base64.b64decode(data["block_content"].encode('utf-8'))
+        logging.info(os.path.exists(self.local_storage_base_path))
         if not os.path.exists(self.local_storage_base_path):
             os.makedirs(self.local_storage_base_path)
         print(f"datanode {self.id} storing at {self.local_storage_base_path}")
@@ -53,7 +54,14 @@ class DataNode:
 
 
     async def read_block(self, req):
-        pass
+        block_id = req.query['id']
+        logging.info(f"{self.local_storage_base_path}/{block_id}-r*")
+        for f in glob.glob(f"{self.local_storage_base_path}/{block_id}-r*"):
+            with open(f, 'rb') as block_reader:
+                block_content = block_reader.read(-1)
+                return web.Response(status=200, body=block_content)
+        return web.Response(status=404, text=f"block not found")
+        
     async def block_report(self, req):
         if not os.path.exists(self.local_storage_base_path):
             return web.Response(status=200, text=json.dumps([]))

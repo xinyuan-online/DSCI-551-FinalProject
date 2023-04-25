@@ -1,96 +1,232 @@
 <fsimage>
 	<INodeSection>
-		<lastInodeId>71</lastInodeId>
-		<numInodes>27</numInodes>
-		<lastBlockId>100655</lastBlockId>
+		<lastInodeId>98</lastInodeId>
+		<numInodes>20</numInodes>
+		<lastBlockId>100671</lastBlockId>
 		<inode>
 			<id>0</id>
 			<type>DIRECTORY</type>
 			<name></name>
 		</inode>
 		<inode>
-			<id>7</id>
+			<id>78</id>
 			<type>DIRECTORY</type>
-			<name>abcdsfg</name>
+			<name>551-FinalProject</name>
 		</inode>
 		<inode>
-			<id>60</id>
-			<type>DIRECTORY</type>
-			<name>avadh</name>
-		</inode>
-		<inode>
-			<id>70</id>
+			<id>79</id>
 			<type>FILE</type>
-			<name>results.csv</name>
+			<name>edfs.py</name>
 			<replication>3</replication>
 			<blocks>
 				<block>
-					<id>100654</id>
-					<numBytes>8399</numBytes>
+					<id>100659</id>
+					<numBytes>8440</numBytes>
 				</block>
 			</blocks>
 		</inode>
 		<inode>
-			<id>61</id>
-			<type>DIRECTORY</type>
-			<name>testtest</name>
-		</inode>
-		<inode>
-			<id>62</id>
-			<type>DIRECTORY</type>
-			<name>test</name>
-		</inode>
-		<inode>
-			<id>63</id>
+			<id>80</id>
 			<type>FILE</type>
-			<name>sql2mr.jar</name>
+			<name>start_dfs.py</name>
 			<replication>3</replication>
 			<blocks>
 				<block>
-					<id>100642</id>
-					<numBytes>3418</numBytes>
+					<id>100660</id>
+					<numBytes>1729</numBytes>
 				</block>
 			</blocks>
 		</inode>
 		<inode>
-			<id>69</id>
+			<id>81</id>
 			<type>FILE</type>
-			<name>UnityHubSetup.exe</name>
+			<name>web_ui.py</name>
 			<replication>3</replication>
 			<blocks>
 				<block>
-					<id>100652</id>
-					<numBytes>67108864</numBytes>
-				</block>
-				<block>
-					<id>100653</id>
-					<numBytes>50336504</numBytes>
+					<id>100661</id>
+					<numBytes>5452</numBytes>
 				</block>
 			</blocks>
+		</inode>
+		<inode>
+			<id>83</id>
+			<type>DIRECTORY</type>
+			<name>templates</name>
+		</inode>
+		<inode>
+			<id>88</id>
+			<type>FILE</type>
+			<name>index_new.html</name>
+			<replication>3</replication>
+			<blocks>
+				<block>
+					<id>100665</id>
+					<numBytes>4499</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>84</id>
+			<type>DIRECTORY</type>
+			<name>src</name>
+		</inode>
+		<inode>
+			<id>89</id>
+			<type>DIRECTORY</type>
+			<name>FSTree</name>
+		</inode>
+		<inode>
+			<id>90</id>
+			<type>FILE</type>
+			<name>FSTree.py</name>
+			<replication>3</replication>
+			<blocks>
+				<block>
+					<id>100666</id>
+					<numBytes>10029</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>91</id>
+			<type>DIRECTORY</type>
+			<name>servers</name>
+		</inode>
+		<inode>
+			<id>92</id>
+			<type>FILE</type>
+			<name>datanode.py</name>
+			<replication>3</replication>
+			<blocks>
+				<block>
+					<id>100667</id>
+					<numBytes>3331</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>93</id>
+			<type>FILE</type>
+			<name>namenode.py</name>
+			<replication>3</replication>
+			<blocks>
+				<block>
+					<id>100668</id>
+					<numBytes>10268</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>85</id>
+			<type>DIRECTORY</type>
+			<name>static</name>
+		</inode>
+		<inode>
+			<id>86</id>
+			<type>FILE</type>
+			<name>background1.jpg</name>
+			<replication>3</replication>
+			<blocks>
+				<block>
+					<id>100663</id>
+					<numBytes>3394250</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>87</id>
+			<type>FILE</type>
+			<name>background2.jpg</name>
+			<replication>3</replication>
+			<blocks>
+				<block>
+					<id>100664</id>
+					<numBytes>1791463</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>94</id>
+			<type>DIRECTORY</type>
+			<name>conf</name>
+		</inode>
+		<inode>
+			<id>95</id>
+			<type>FILE</type>
+			<name>Config.py</name>
+			<replication>3</replication>
+			<blocks>
+				<block>
+					<id>100669</id>
+					<numBytes>58</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>96</id>
+			<type>FILE</type>
+			<name>configuration.xml</name>
+			<replication>3</replication>
+			<blocks>
+				<block>
+					<id>100670</id>
+					<numBytes>711</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>97</id>
+			<type>DIRECTORY</type>
+			<name>logs</name>
 		</inode>
 	</INodeSection>
 	<INodeDirectorySection>
 		<directory>
 			<parent>0</parent>
-			<child>7</child>
-			<child>60</child>
-			<child>61</child>
-			<child>63</child>
-			<child>69</child>
+			<child>78</child>
 		</directory>
 		<directory>
-			<parent>7</parent>
+			<parent>78</parent>
+			<child>79</child>
+			<child>80</child>
+			<child>81</child>
+			<child>83</child>
+			<child>84</child>
+			<child>85</child>
+			<child>94</child>
+			<child>97</child>
 		</directory>
 		<directory>
-			<parent>60</parent>
-			<child>70</child>
+			<parent>83</parent>
+			<child>88</child>
 		</directory>
 		<directory>
-			<parent>61</parent>
-			<child>62</child>
+			<parent>84</parent>
+			<child>89</child>
+			<child>91</child>
 		</directory>
 		<directory>
-			<parent>62</parent>
+			<parent>89</parent>
+			<child>90</child>
+		</directory>
+		<directory>
+			<parent>91</parent>
+			<child>92</child>
+			<child>93</child>
+		</directory>
+		<directory>
+			<parent>85</parent>
+			<child>86</child>
+			<child>87</child>
+		</directory>
+		<directory>
+			<parent>94</parent>
+			<child>95</child>
+			<child>96</child>
+		</directory>
+		<directory>
+			<parent>97</parent>
 		</directory>
 	</INodeDirectorySection>
 </fsimage>

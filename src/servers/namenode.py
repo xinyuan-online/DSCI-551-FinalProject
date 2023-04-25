@@ -23,17 +23,19 @@ class NameNode():
         }
         logging.basicConfig(filename=f'{self.home_path}/logs/namenode.log', 
                             encoding='utf-8', level=logging.DEBUG)
+        logging.info(self.datanodes_avaliable)
         self.fsimage_path = f"{self.home_path}/fsimage/fsimage_test.xml"
 
     def launch_server(self):
         logging.info(f'Listening on port {self.info[1]}')
-        app = web.Application()
+        app = web.Application(client_max_size=1024*1024*1000)
         app.add_routes([web.get('/ls', self.ls),
                         web.put('/put', self.put),
                         web.put('/allocate', self.allocate_block),
                         web.put('/mkdir', self.mkdir),
                         web.delete('/rm', self.rm),
-                        web.delete('/rmdir', self.rmdir)])
+                        web.delete('/rmdir', self.rmdir),
+                        web.get('/get', self.get)])
         web.run_app(app, host=self.info[0], port=self.info[1])
 
 
@@ -45,7 +47,6 @@ class NameNode():
         choice = datanodes[:count]
         return choice, count
         
-
     def initialize(self):
         self.block_mapping = self.fstree.load_xml(self.fsimage_path)
         for datanode in self.datanodes_avaliable:
@@ -58,6 +59,8 @@ class NameNode():
                     #block not found in filesystem metadata, remove the block
                     delete_url = f"http://{datanode[1]}:{datanode[2]}/remove/{block_id}"
                     d_resp = requests.delete(delete_url)
+                except:
+                    pass
             
 
     async def rm(self, req):
@@ -101,7 +104,6 @@ class NameNode():
         try:
             path_to_ls = req.query['path']
             path_lst = parse_path(path_to_ls)
-            fount_node = None
             found_node = self.fstree.find(path_lst)
             if found_node.node_type != "DIRECTORY":
                 return web.Response(status=405, text="Target is not a directory")
@@ -113,6 +115,25 @@ class NameNode():
                         for x in found_node.childs]
             return web.Response(text=json.dumps(response))
 
+
+    async def get(self, req):
+        try:
+            path_to_get = req.query['path']
+            path_lst = parse_path(path_to_get)
+            found_node = self.fstree.find(path_lst)
+            if found_node.node_type != "FILE":
+                return web.Response(status=405, text="Cannot get a directory")
+        except INodeError as e:
+            return web.Response(status=e.error_code, text=str(e))
+        else:
+            file_composition_blocks = found_node.blocks
+            file_composition = [
+                {'block_id': block_id,
+                'block_mapping': self.block_mapping[block_id]}
+                for (block_id, numbytes) in file_composition_blocks
+            ]
+        
+            return web.Response(text=json.dumps(file_composition))
 
     async def mkdir(self, req):
         try:

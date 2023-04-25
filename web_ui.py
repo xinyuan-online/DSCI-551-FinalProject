@@ -14,11 +14,7 @@ from urllib.parse import unquote_plus as urlunquote
     
 app = Quart(__name__)
 app.config.from_object(f"conf.Config.Config")
-print(app.config['MAX_CONTENT_LENGTH'])
 
-
-logging.basicConfig(filename=f'./webui.log', 
-                            encoding='utf-8', level=logging.DEBUG)
 
 
 def get_parent(unquoted_url):
@@ -55,7 +51,8 @@ async def create_folder():
     if folder_name:
         full_folder_name = join_url(unquoted_path, folder_name)
         code, resp = await app.client.handle_user_request("mkdir", [full_folder_name])
-
+        if code != 200:
+            return code, resp
         return redirect(url_for('folder_contents', item_path=path))
     return "Invalid folder name"
 
@@ -63,6 +60,8 @@ async def create_folder():
 async def delete_folder(item_path):
     unquoted_path = urlunquote(item_path)
     code, resp = await app.client.handle_user_request("rmdir", [unquoted_path])
+    if code != 200:
+        return resp, code
     parent = urlquote(get_parent(unquoted_path))
     return redirect(url_for('folder_contents', item_path=parent))
 
@@ -71,6 +70,8 @@ async def delete_folder(item_path):
 async def delete_item(item_path):
     unquoted_path = urlunquote(item_path)
     code, resp = await app.client.handle_user_request("rm", [unquoted_path])
+    if code != 200:
+        return resp, code
     parent = urlquote(get_parent(unquoted_path))
     return redirect(url_for('folder_contents', item_path=parent))
 
@@ -104,6 +105,8 @@ async def folder_contents(item_path):
     if unquoted_path == '/':
         return redirect('/')
     code, resp = await app.client.handle_user_request("ls", [unquoted_path])
+    if code != 200:
+        return resp, code
     logging.info(resp)
     folder_contents = json.loads(resp)
     existing_files = [
@@ -130,7 +133,8 @@ async def upload_file():
                                                           [file.filename, 
                                                            unquoted_folder_path, 
                                                            file])
-        print(code, resp)
+        if code != 200:
+            return resp, code
         return redirect(url_for('folder_contents', item_path=path))
 
 
@@ -139,20 +143,13 @@ async def upload_file():
 
 @app.route('/download/<item_path>')
 async def download_file(item_path):
-    file_info = metadata_server.exposed_get_file_info(filename)
-
-    if not file_info:
-        return "File not found", 404
-
-    if file_info['is_folder']:
-        print("detect folder")
-        return redirect(url_for('folder_contents', folder_name=filename))
-    print(filename)
-    file_data = metadata_server.exposed_get(filename)
-    if not file_data:
-        return "File not found", 404
-
-    file_storage = BytesIO(file_data)
+    unquoted_path = urlunquote(item_path)
+    code, resp = await app.client.handle_user_request("get", 
+                                            [unquoted_path])
+    if code != 200:
+        return code, resp
+    filename = unquoted_path.split('/')[-1]
+    file_storage = BytesIO(resp)
     response = Response(file_storage, content_type='application/octet-stream')
     response.headers.set('Content-Disposition', 'attachment', filename=filename)
 
@@ -161,9 +158,10 @@ async def download_file(item_path):
 @app.before_serving
 async def startup():
     app.client = EdfsClient()
-    asyncio.ensure_future(app.client.initialize())
+    await app.client.initialize()
+
 
     
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True, port=4000)

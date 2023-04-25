@@ -5,11 +5,11 @@ FILE = 1
 DIRECTORY = 2
 OTHER = 3
 
-PATH_NOT_FOUND_ERROR = 1
-PATH_DUPLICATE_ERROR = 2
-REMOVE_DIRECTORY_NOT_EMPTY_ERROR = 3
-DELETE_ROOT_NODE_ERROR = 4
-INVALID_PATH_ERROR = 5
+PATH_NOT_FOUND_ERROR = 404
+PATH_DUPLICATE_ERROR = 405
+REMOVE_DIRECTORY_NOT_EMPTY_ERROR = 405
+DELETE_ROOT_NODE_ERROR = 405
+INVALID_PATH_ERROR = 404
 
 NODE_TYPES = {
     FILE: "FILE",
@@ -17,7 +17,7 @@ NODE_TYPES = {
     OTHER: "OTHER"
 }
 class INodeError(Exception):
-    def __init__(self, message, errors = -1):            
+    def __init__(self, message, errors = 400):            
         super().__init__(message)
         self.error_code = errors
 
