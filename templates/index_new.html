@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+    <title>EDFS Web UI</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='background2.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 10px;
+            color: white;
+            font-size: 24px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            color: white;
+            font-weight: normal;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        ul.list-group {
+            max-width: 350px;
+        }
+.existing-files-heading {
+  margin-top: 20px;
+}
+
+
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div class="header">EDFS Project by group7: Yaohao Wang, Xinyuan Zhang, Chenyu Li</div>
+
+   <div class="container">
+      <h1 class="mt-3">Upload a file</h1>
+
+        <form action="/upload" method="post" enctype="multipart/form-data" class="d-inline-flex">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
+                <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+            </div>
+
+            <script>
+                // Get the input element
+                var input = document.getElementById("inputGroupFile01");
+                // When the user selects a file, set the label to the file name
+                input.addEventListener("change", function() {
+                    var fileName = input.files[0].name;
+                    var label = document.querySelector(".custom-file-label");
+                    label.textContent = fileName;
+                });
+            </script>
+
+            <button type="submit" class="btn btn-primary ml-2">Upload</button>
+        </form>
+
+    <h1 class = "existing-files-heading">Existing files and folders</h1>
+    {% if folder_name %}
+    <a href="javascript:history.back()">Back to the parent folder</a>
+    {% endif %}
+
+    <ul class="list-group mx-auto w-50">
+        {% for item in existing_files %}
+        {% if item["type"] == "folder" %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span class="folder" onclick="window.location.href='/folder/{{ item['name'] }}'">{{ item["name"] }}</span>
+            <a href="{{ url_for('delete_folder', folder_name=item['name']) }}" style="color: red;">[Delete]</a>
+        </li>
+        {% else %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('download_file', filename=item['name']) }}">{{ item['name'] }}</a>
+            <a href="{{ url_for('delete_item', item_name=item['name']) }}" style="color: red;">[Delete]</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+
+        <h2 class = "existing-files-heading">Create Folder</h2>
+
+        <form action="{{ url_for('create_folder') }}" method="post" class="d-inline-flex">
+            <input type="hidden" name="path" value="{{ folder_name }}">  <!-- Add this line -->
+            <input type="text" name="folder_name" placeholder="Folder Name" required class="form-control">
+            <input type="submit" value="Create Folder" class="btn btn-primary ml-2">
+        </form>
+
+</div>
+</body>
+</html>
