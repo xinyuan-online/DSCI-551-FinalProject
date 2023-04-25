@@ -62,8 +62,8 @@
 
         <form action="/upload" method="post" enctype="multipart/form-data" class="d-inline-flex">
             <div class="custom-file">
-                <input type="file" name="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
-                <input type="hidden" name="folder_name" value="{{ folder_name }}"> <!-- Add this line -->
+                <input type="file" class="custom-file-input" id="inputGroupFile01" name="file" aria-describedby="inputGroupFileAddon01">
+                <input type="hidden" name="folder_name" value="{{ folder_name }}"> 
                 <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
             </div>
 
