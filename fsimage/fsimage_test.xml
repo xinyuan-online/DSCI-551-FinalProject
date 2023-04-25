@@ -1,8 +1,8 @@
 <fsimage>
 	<INodeSection>
-		<lastInodeId>51</lastInodeId>
+		<lastInodeId>57</lastInodeId>
 		<numInodes>30</numInodes>
-		<lastBlockId>100640</lastBlockId>
+		<lastBlockId>100641</lastBlockId>
 		<inode>
 			<id>0</id>
 			<type>DIRECTORY</type>
@@ -31,19 +31,9 @@
 			</blocks>
 		</inode>
 		<inode>
-			<id>8</id>
-			<type>DIRECTORY</type>
-			<name>fran</name>
-		</inode>
-		<inode>
 			<id>7</id>
 			<type>DIRECTORY</type>
 			<name>abcdsfg</name>
-		</inode>
-		<inode>
-			<id>32</id>
-			<type>DIRECTORY</type>
-			<name>test1</name>
 		</inode>
 		<inode>
 			<id>37</id>
@@ -63,18 +53,6 @@
 			</blocks>
 		</inode>
 		<inode>
-			<id>49</id>
-			<type>FILE</type>
-			<name>README.md</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100638</id>
-					<numBytes>438</numBytes>
-				</block>
-			</blocks>
-		</inode>
-		<inode>
 			<id>50</id>
 			<type>FILE</type>
 			<name>requirement.txt</name>
@@ -86,16 +64,30 @@
 				</block>
 			</blocks>
 		</inode>
+		<inode>
+			<id>51</id>
+			<type>DIRECTORY</type>
+			<name>test11</name>
+		</inode>
+		<inode>
+			<id>52</id>
+			<type>DIRECTORY</type>
+			<name>test22</name>
+		</inode>
+		<inode>
+			<id>55</id>
+			<type>DIRECTORY</type>
+			<name>test33</name>
+		</inode>
 	</INodeSection>
 	<INodeDirectorySection>
 		<directory>
 			<parent>0</parent>
 			<child>1</child>
 			<child>7</child>
-			<child>32</child>
 			<child>37</child>
-			<child>49</child>
 			<child>50</child>
+			<child>51</child>
 		</directory>
 		<directory>
 			<parent>1</parent>
@@ -104,20 +96,24 @@
 		<directory>
 			<parent>2</parent>
 			<child>4</child>
-			<child>8</child>
-		</directory>
-		<directory>
-			<parent>8</parent>
 		</directory>
 		<directory>
 			<parent>7</parent>
 		</directory>
 		<directory>
-			<parent>32</parent>
-		</directory>
-		<directory>
 			<parent>37</parent>
 			<child>38</child>
+		</directory>
+		<directory>
+			<parent>51</parent>
+			<child>52</child>
+		</directory>
+		<directory>
+			<parent>52</parent>
+			<child>55</child>
+		</directory>
+		<directory>
+			<parent>55</parent>
 		</directory>
 	</INodeDirectorySection>
 </fsimage>

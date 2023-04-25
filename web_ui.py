@@ -102,26 +102,16 @@ async def folder_contents(item_path):
 @app.route('/upload', methods=['POST'])
 async def upload_file():
     file = (await request.files).get('file')
-    folder_name = (await request.form).get("folder_name", "")
-
+    folder_name = (await request.folder_name).get("folder_name", "")
+    logging.info(request.__dict__)
     if file and file.filename:
         file_data = file.read()
         file_size = len(file_data)
         file_path = os.path.join(folder_name, file.filename)
 
         response = metadata_server.exposed_put(file_path, file_size, file_data)
-
-        existing_files = [
-            {
-                "name": file["name"],
-                "size": metadata_server.exposed_get_file_info(file["name"])["file_size"] if (
-                        metadata_server.exposed_get_file_info(file["name"]) and
-                        metadata_server.exposed_get_file_info(file["name"])["is_folder"] == False) else None,
-                "is_folder": metadata_server.exposed_get_file_info(file["name"])[
-                    "is_folder"] if metadata_server.exposed_get_file_info(file["name"]) else None,
-            }
-            for file in metadata_server.exposed_ls(folder_name)
-        ]
+        parent = urlquote(unquoted_path[:slash_index] if slash_index != -1 else '/')
+        return redirect(url_for('folder_contents', item_path=parent))
 
         return await render_template('index_new.html', existing_files=existing_files, folder_name=folder_name if folder_name else None)
 
@@ -154,6 +144,7 @@ async def download_file(item_path):
 async def startup():
     app.client = EdfsClient()
     asyncio.ensure_future(app.client.initialize())
+    app.config['UPLOAD_FOLDER'] = "temp"
     
 
 if __name__ == '__main__':
