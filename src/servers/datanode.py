@@ -16,11 +16,11 @@ class DataNode:
     def __init__(self, id, hostname, port, local_storage_path, home_path):
         self.id = id
         self.local_storage_base_path = f"{local_storage_path}/{self.id}"
-        print(f"datanode {self.id} storing at {self.local_storage_base_path}")
         self.info = (hostname, port)
         self.home_path = home_path
         logging.basicConfig(filename=f'{self.home_path}/logs/{self.id}.log', 
                             encoding='utf-8', level=logging.DEBUG)
+        print(f"datanode {self.id} initialzed, storing at {self.local_storage_base_path}")
 
     def launch_server(self):
         app = web.Application(client_max_size=1024*1024*100)
@@ -47,7 +47,6 @@ class DataNode:
         logging.info(os.path.exists(self.local_storage_base_path))
         if not os.path.exists(self.local_storage_base_path):
             os.makedirs(self.local_storage_base_path)
-        print(f"datanode {self.id} storing at {self.local_storage_base_path}")
         with open(f"{self.local_storage_base_path}/{block_id}-r{replica}", 'wb') as block_writer:
             block_writer.write(block_content)
         return web.Response(status=200, text=f"block {block_id} replica {replica} written succesfully")

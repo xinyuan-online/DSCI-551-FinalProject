@@ -9,6 +9,8 @@ restart the shell</br>
 start-dfs </br>
 (open a new shell)</br>
 edfs -ls / </br>
-when you want to terminate, switch back to the server session and ctrl-c</br>
+(or, for a web-ui) </br>
+cd to this folder and python3 ./web_ui.py </br>
+when you want to terminate the servers, switch back to the server session and ctrl-c</br>
 
 

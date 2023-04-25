@@ -45,7 +45,7 @@ if __name__ == "__main__":
     
     for d in datanodes_proc:
         d.start()
-    time.sleep(5)
+    time.sleep(3)
     p.start()
     try:
         while True:
