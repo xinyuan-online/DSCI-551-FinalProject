@@ -17,10 +17,6 @@ class NameNode():
         self.home_path = home_path
         # {id: [datanodes that hold the replica]}
         self.block_mapping = {}
-        self.request_methods = {
-            "ls": self.ls,
-            "put": self.put,
-        }
         logging.basicConfig(filename=f'{self.home_path}/logs/namenode.log', 
                             encoding='utf-8', level=logging.DEBUG)
         logging.info(self.datanodes_avaliable)
@@ -242,27 +238,6 @@ class NameNode():
     def close_server(self):
         self.fstree.save_fs_to_fsimage(self.fsimage_path)
         logging.info('Namenode metadata saved to fsimage_test.xml')
-
-    '''
-    async def handle_client_request(self, reader, writer):
-        addr = writer.get_extra_info('peername')
-        req = await receive_request(reader)
-        logging.info(f"Recieved [{req.command}] request from {addr}")
-        code, response = 0, "no response"
-        try:
-            code, response = await self.request_methods[req.command](*req.arguments, content=req.content)
-        except TypeError:
-            code = 405
-            response = "Incorrect argument"
-        except Exception as e:
-            code = -1
-            response = str(e)
-        finally:
-            await send_response(writer, code, response)
-            writer.close()
-            await writer.wait_closed()
-            logging.info('Connection with client terminated.')
-    '''
 
 def run_namenode(*args):
     namenode_instance = NameNode(*args)

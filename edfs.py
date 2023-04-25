@@ -9,6 +9,9 @@ from urllib.parse import quote_plus as urlencode
 import xml.etree.ElementTree as ET
 from io import BytesIO
 import logging
+
+FROM_SHELL = False
+
 def get_config(homepath):
     def get_namenode_info(xmlnode):
         return (xmlnode.find('hostname').text, int(xmlnode.find('port').text), 
@@ -65,7 +68,12 @@ class EdfsClient:
     async def handle_ls(self, path_to_ls):
         #encoded_path_to_ls = urlencode(path_to_ls)
         async with self.namenode_session.get('/ls', params={"path": path_to_ls}) as resp:
-            return resp.status, await resp.text()
+            if resp.status != 200:
+                return resp.status, resp_text
+            if FROM_SHELL:
+                return resp.status, '\t'.join([x['name'] for x in json.loads(await resp.text())])
+            else:
+                return resp.status, await resp.text()
 
     async def handle_get(self, path_to_get):
         block_composition = []
@@ -188,6 +196,7 @@ class EdfsClient:
         group.add_argument('-put', nargs=2)
         group.add_argument('-rm', nargs=1)
         group.add_argument('-rmdir', nargs=1)
+        group.add_argument('-get', nargs=1)
         args = parser.parse_args().__dict__
         for k, v in args.items():
             if v == None:
@@ -216,4 +225,5 @@ async def run_client():
 
 
 if __name__ == "__main__":
+    FROM_SHELL = True
     asyncio.run(run_client())
