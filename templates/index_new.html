@@ -79,7 +79,12 @@
 
             <button type="submit" class="btn btn-primary ml-2">Upload</button>
         </form>
+       
+       {% if folder_name %}
+       <h2>Current folder: {{ folder_name }}</h2>
+       {% endif %}
 
+       
     <h1 class = "existing-files-heading">Existing files and folders</h1>
     {% if folder_name %}
     <a href="javascript:history.back()">Back to the parent folder</a>
@@ -91,12 +96,12 @@
         <li class="list-group-item d-flex justify-content-between align-items-center">
             <a href="{{ url_for('folder_contents', item_path=item['path']) }}">{{ item['name'] }}</a>
             <span class="folder" onclick="window.location.href='/folder/{{ item['name'] }}'">{{ item["name"] }}</span>
-            <a href="{{ url_for('delete_folder', item_path=item['path']) }}" style="color: red;">[Delete]</a>
+            <a href="{{ url_for('delete_folder', item_path=item['path']) }}" class="badge badge-danger">[Delete]</a>
         </li>
         {% else %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
             <a href="{{ url_for('download_file', item_path=item['path']) }}">{{ item['name'] }}</a>
-            <a href="{{ url_for('delete_item', item_path=item['path']) }}" style="color: red;">[Delete]</a>
+            <a href="{{ url_for('delete_item', item_name=item['name']) }}"class="badge badge-danger>[Delete]</a>
         </li>
         {% endif %}
         {% endfor %}
