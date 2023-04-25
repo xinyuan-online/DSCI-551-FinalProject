@@ -213,7 +213,7 @@ class NameNode():
             self.block_mapping[block_id] = self.block_mapping.get(block_id, []) + datanode_id
 
             new_node.blocks.append((block_id, block_size))
-        new_node.set_replication(block_count)
+        new_node.set_replication(self.replication_factor)
 
         self.fstree.insert(new_node, parent_path)
         return web.Response(status=200, text="Successfully put file")
