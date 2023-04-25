@@ -23,7 +23,7 @@ class DataNode:
                             encoding='utf-8', level=logging.DEBUG)
 
     def launch_server(self):
-        app = web.Application()
+        app = web.Application(client_max_size=1024*1024*100)
         app.add_routes([web.post('/write', self.write_block),
                         web.get('/read', self.read_block), 
                         web.get('/blockreport', self.block_report), 

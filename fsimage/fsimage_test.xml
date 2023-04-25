@@ -1,34 +1,12 @@
 <fsimage>
 	<INodeSection>
-		<lastInodeId>57</lastInodeId>
-		<numInodes>30</numInodes>
-		<lastBlockId>100641</lastBlockId>
+		<lastInodeId>71</lastInodeId>
+		<numInodes>27</numInodes>
+		<lastBlockId>100655</lastBlockId>
 		<inode>
 			<id>0</id>
 			<type>DIRECTORY</type>
 			<name></name>
-		</inode>
-		<inode>
-			<id>1</id>
-			<type>DIRECTORY</type>
-			<name>test</name>
-		</inode>
-		<inode>
-			<id>2</id>
-			<type>DIRECTORY</type>
-			<name>test1</name>
-		</inode>
-		<inode>
-			<id>4</id>
-			<type>FILE</type>
-			<name>test2</name>
-			<replication>1</replication>
-			<blocks>
-				<block>
-					<id>100000</id>
-					<numBytes>620</numBytes>
-				</block>
-			</blocks>
 		</inode>
 		<inode>
 			<id>7</id>
@@ -36,84 +14,83 @@
 			<name>abcdsfg</name>
 		</inode>
 		<inode>
-			<id>37</id>
+			<id>60</id>
 			<type>DIRECTORY</type>
-			<name>abc</name>
+			<name>avadh</name>
 		</inode>
 		<inode>
-			<id>38</id>
+			<id>70</id>
 			<type>FILE</type>
-			<name>fsimage564.xml</name>
-			<replication>1</replication>
+			<name>results.csv</name>
+			<replication>3</replication>
 			<blocks>
 				<block>
-					<id>100627</id>
-					<numBytes>16825</numBytes>
+					<id>100654</id>
+					<numBytes>8399</numBytes>
 				</block>
 			</blocks>
 		</inode>
 		<inode>
-			<id>50</id>
+			<id>61</id>
+			<type>DIRECTORY</type>
+			<name>testtest</name>
+		</inode>
+		<inode>
+			<id>62</id>
+			<type>DIRECTORY</type>
+			<name>test</name>
+		</inode>
+		<inode>
+			<id>63</id>
 			<type>FILE</type>
-			<name>requirement.txt</name>
-			<replication>1</replication>
+			<name>sql2mr.jar</name>
+			<replication>3</replication>
 			<blocks>
 				<block>
-					<id>100639</id>
-					<numBytes>26100</numBytes>
+					<id>100642</id>
+					<numBytes>3418</numBytes>
 				</block>
 			</blocks>
 		</inode>
 		<inode>
-			<id>51</id>
-			<type>DIRECTORY</type>
-			<name>test11</name>
-		</inode>
-		<inode>
-			<id>52</id>
-			<type>DIRECTORY</type>
-			<name>test22</name>
-		</inode>
-		<inode>
-			<id>55</id>
-			<type>DIRECTORY</type>
-			<name>test33</name>
+			<id>69</id>
+			<type>FILE</type>
+			<name>UnityHubSetup.exe</name>
+			<replication>3</replication>
+			<blocks>
+				<block>
+					<id>100652</id>
+					<numBytes>67108864</numBytes>
+				</block>
+				<block>
+					<id>100653</id>
+					<numBytes>50336504</numBytes>
+				</block>
+			</blocks>
 		</inode>
 	</INodeSection>
 	<INodeDirectorySection>
 		<directory>
 			<parent>0</parent>
-			<child>1</child>
 			<child>7</child>
-			<child>37</child>
-			<child>50</child>
-			<child>51</child>
-		</directory>
-		<directory>
-			<parent>1</parent>
-			<child>2</child>
-		</directory>
-		<directory>
-			<parent>2</parent>
-			<child>4</child>
+			<child>60</child>
+			<child>61</child>
+			<child>63</child>
+			<child>69</child>
 		</directory>
 		<directory>
 			<parent>7</parent>
 		</directory>
 		<directory>
-			<parent>37</parent>
-			<child>38</child>
+			<parent>60</parent>
+			<child>70</child>
 		</directory>
 		<directory>
-			<parent>51</parent>
-			<child>52</child>
+			<parent>61</parent>
+			<child>62</child>
 		</directory>
 		<directory>
-			<parent>52</parent>
-			<child>55</child>
-		</directory>
-		<directory>
-			<parent>55</parent>
+			<parent>62</parent>
 		</directory>
 	</INodeDirectorySection>
 </fsimage>

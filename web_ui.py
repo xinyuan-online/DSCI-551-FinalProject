@@ -10,9 +10,25 @@ import json
 from urllib.parse import quote_plus as urlquote
 from urllib.parse import unquote_plus as urlunquote
 
+
+    
 app = Quart(__name__)
+app.config.from_object(f"conf.Config.Config")
+print(app.config['MAX_CONTENT_LENGTH'])
+
+
 logging.basicConfig(filename=f'./webui.log', 
                             encoding='utf-8', level=logging.DEBUG)
+
+
+def get_parent(unquoted_url):
+    slash_index = unquoted_url.rfind('/')
+    parent = unquoted_url[:slash_index] if slash_index != 0 else '/'
+    return parent
+
+def join_url(a, b):
+    return (a if a != '/' else '') + '/' + b
+
 @app.route('/list_folder/<folder_name>')
 async def list_folder(folder_name):
     print(folder_name)
@@ -22,41 +38,40 @@ async def list_folder(folder_name):
     return jsonify(folder_contents)
 
 
+@app.context_processor
+def utility_processor():
+    def quote(url):
+        return urlquote(url)
+    def unquote(url):
+        return urlunquote(url)
+    return dict(quote=quote, unquote=unquote)
+
+
 @app.route('/create_folder', methods=['POST'])
 async def create_folder():
     folder_name = (await request.form).get("folder_name")
-    path = (await request.form).get("path", "")
-
+    path = (await request.form).get("path", "/")
+    unquoted_path = urlunquote(path)
     if folder_name:
-        full_folder_name = os.path.join(path, folder_name)
-        response = metadata_server.exposed_create_folder(full_folder_name)
-        existing_files = [
-            {
-                "name": file["name"],
-                "is_folder": (metadata_server.exposed_get_file_info(file["name"]) or {})
-            }
-            for file in metadata_server.exposed_ls(path)
-        ]
-        return await render_template('index_new.html', existing_files=existing_files, folder_name=path)
+        full_folder_name = join_url(unquoted_path, folder_name)
+        code, resp = await app.client.handle_user_request("mkdir", [full_folder_name])
+
+        return redirect(url_for('folder_contents', item_path=path))
     return "Invalid folder name"
 
 @app.route("/deletefolder/<item_path>")
 async def delete_folder(item_path):
     unquoted_path = urlunquote(item_path)
-    code, resp = await app.client.handle_user_request("rmdir", ['/'+ unquoted_path])
-    slash_index = unquoted_path.rfind('/')
-
-    parent = urlquote(unquoted_path[:slash_index] if slash_index != -1 else '/')
+    code, resp = await app.client.handle_user_request("rmdir", [unquoted_path])
+    parent = urlquote(get_parent(unquoted_path))
     return redirect(url_for('folder_contents', item_path=parent))
 
 
 @app.route("/delete/<item_path>")
 async def delete_item(item_path):
     unquoted_path = urlunquote(item_path)
-    code, resp = await app.client.handle_user_request("rm", ['/'+ unquoted_path])
-    slash_index = unquoted_path.rfind('/')
-
-    parent = urlquote(unquoted_path[:slash_index] if slash_index != -1 else '/')
+    code, resp = await app.client.handle_user_request("rm", [unquoted_path])
+    parent = urlquote(get_parent(unquoted_path))
     return redirect(url_for('folder_contents', item_path=parent))
 
 
@@ -69,29 +84,33 @@ async def index(path=""):
         {
             "name": file['name'],
             "type": file['type'],
-            "path": file['name']
+            "path": urlquote("/" + file['name'])
         }
         for file in folder_contents
     ]
     logging.info(existing_files)
-    return await render_template("index_new.html", existing_files=existing_files)
+    return await render_template("index_new.html", existing_files=existing_files, folder_name=urlquote("/"))
 
-
-@app.route('/folder/')
-async def folder_root():
-    return redirect('/')
+@app.route('/parent/<item_path>')
+async def parent(item_path):
+    unquoted_path = urlunquote(item_path)
+    parent = urlquote(get_parent(unquoted_path))
+    print(f'/folder/{parent}')
+    return redirect(url_for('folder_contents', item_path=parent))
 
 @app.route("/folder/<item_path>")
 async def folder_contents(item_path):
     unquoted_path = urlunquote(item_path)
-    code, resp = await app.client.handle_user_request("ls", ['/'+ unquoted_path])
+    if unquoted_path == '/':
+        return redirect('/')
+    code, resp = await app.client.handle_user_request("ls", [unquoted_path])
     logging.info(resp)
     folder_contents = json.loads(resp)
     existing_files = [
         {
             "name": file["name"],
             "type": file["type"],
-            "path": urlquote(unquoted_path + '/' + file["name"])  
+            "path": urlquote(join_url(unquoted_path, file["name"]))  
         }
         for file in folder_contents
     ]
@@ -99,21 +118,21 @@ async def folder_contents(item_path):
         "index_new.html", existing_files=existing_files, folder_name=item_path
     )
 
+
 @app.route('/upload', methods=['POST'])
 async def upload_file():
+    
     file = (await request.files).get('file')
-    folder_name = (await request.folder_name).get("folder_name", "")
-    logging.info(request.__dict__)
+    path = (await request.form).get("path", "/")
+    unquoted_folder_path = urlunquote(path)
     if file and file.filename:
-        file_data = file.read()
-        file_size = len(file_data)
-        file_path = os.path.join(folder_name, file.filename)
+        code, resp = await app.client.handle_user_request("put", 
+                                                          [file.filename, 
+                                                           unquoted_folder_path, 
+                                                           file])
+        print(code, resp)
+        return redirect(url_for('folder_contents', item_path=path))
 
-        response = metadata_server.exposed_put(file_path, file_size, file_data)
-        parent = urlquote(unquoted_path[:slash_index] if slash_index != -1 else '/')
-        return redirect(url_for('folder_contents', item_path=parent))
-
-        return await render_template('index_new.html', existing_files=existing_files, folder_name=folder_name if folder_name else None)
 
     return "Invalid file or filename", 400
 
@@ -121,7 +140,6 @@ async def upload_file():
 @app.route('/download/<item_path>')
 async def download_file(item_path):
     file_info = metadata_server.exposed_get_file_info(filename)
-    print(file_info)
 
     if not file_info:
         return "File not found", 404
@@ -144,7 +162,7 @@ async def download_file(item_path):
 async def startup():
     app.client = EdfsClient()
     asyncio.ensure_future(app.client.initialize())
-    app.config['UPLOAD_FOLDER'] = "temp"
+
     
 
 if __name__ == '__main__':

@@ -7,7 +7,8 @@ import json
 import base64
 from urllib.parse import quote_plus as urlencode
 import xml.etree.ElementTree as ET
-
+from io import BytesIO
+import logging
 def get_config(homepath):
     def get_namenode_info(xmlnode):
         return (xmlnode.find('hostname').text, int(xmlnode.find('port').text), 
@@ -44,7 +45,8 @@ class EdfsClient:
         self.datanodes_info = [(nodeid, (hostname, port))
                                 for nodeid, hostname, port 
                                 in datanode_info['nodes']]
-
+        logging.basicConfig(filename=f'./edfs.log', 
+                            encoding='utf-8', level=logging.DEBUG)
 
     async def initialize(self):
         self.namenode_session = \
@@ -60,14 +62,13 @@ class EdfsClient:
 
 
     async def handle_ls(self, path_to_ls):
-        print(path_to_ls)
         #encoded_path_to_ls = urlencode(path_to_ls)
         async with self.namenode_session.get(f'/ls', params={"path": path_to_ls}) as resp:
             return resp.status, await resp.text()
 
 
-    async def handle_put(self, src_path, dest_path):
-        return await self.put_single_file(src_path, dest_path)
+    async def handle_put(self, *args):
+        return await self.put_single_file(*args)
         
     async def handle_mkdir(self, path):
         mkdir_request = {
@@ -90,32 +91,43 @@ class EdfsClient:
         async with self.namenode_session.delete('/rmdir', json=rmdir_request) as resp:
             return resp.status, await resp.text()
 
-    async def put_single_file(self, src_path, dest_path):
-        abs_path = os.path.abspath(src_path)
-        file_name = os.path.basename(abs_path)
-        file_size = os.path.getsize(abs_path)
+    async def put_single_file(self, src_path, dest_path, src_reader=None):
+        file_path, file_name, file_size, file_bytes = None, None, None, None
+        if src_reader:
+            file_bytes = src_reader.read()
+            file_name = src_path
+            file_size = len(file_bytes)
+        else:
+            file_path = os.path.abspath(src_path)
+            file_name = os.path.basename(file_path)
+            file_size = os.path.getsize(file_path)
         allocation_request = {
             'name': file_name,
             'size': file_size,
             'path': dest_path
         }
-
+        logging.info(file_size)
         #allocate blocks
         allocation_response = None
-        
         async with self.namenode_session.put('/allocate', json=allocation_request) as a_resp:
             if a_resp.status != 200:
+                
                 return a_resp.status, await a_resp.text()
+            
             allocation_response = json.loads(await a_resp.text())
-
         block_count = allocation_response["block_count"]
         full_block_size = allocation_response["full_block_size"]
         block_info = allocation_response["block_info"]
-
+        stream = None
         #contact DataNodes to writeblocks
-        with open(src_path, 'rb') as fr:
+        if src_reader:
+            stream = BytesIO(file_bytes)
+        else:
+            stream = open(src_path, 'rb')
+        
+        try:
             for block in block_info:
-                chunk = fr.read(full_block_size)
+                chunk = stream.read(full_block_size)
                 block_id = block["block_id"]
                 datanode_ids = block["datanode_id"]
                 for replica, datanode_id in enumerate(datanode_ids):
@@ -127,7 +139,8 @@ class EdfsClient:
                     async with self.datanode_sessions[datanode_id].post(f'/write', json=writeblock_body) as d_resp:
                         if d_resp.status != 200:
                             return d_resp.status, await d_resp.text()
-
+        finally: 
+            stream.close()
         #upon succesfully datanode writes, update metadata in namenodes   
         put_request = allocation_request.copy()
 
@@ -135,6 +148,7 @@ class EdfsClient:
         put_request["allocation"] = allocation_response
         async with self.namenode_session.put('/put', json=put_request) as p_resp:
             return p_resp.status, await p_resp.text()
+        
 
             
         

@@ -7,8 +7,6 @@ import requests
 import time
 from ..FSTree.FSTree import Inode, INodeError, FSTree, parse_path, INVALID_PATH_ERROR
 
-routes = web.RouteTableDef()
-
 class NameNode():
     def __init__(self, hostname, port, blocksize, replicationfactor, datanode_info, home_path):
         self.fstree = FSTree()
@@ -159,7 +157,7 @@ class NameNode():
             item_size = req_body["size"]
             path_to_put = req_body["path"]
             block_count = (item_size // self.block_size) + 1
-            
+            logging.info(path_to_put)
             parent_path = parse_path(path_to_put)
             new_node = Inode(item_name, "FILE")
             self.fstree.insert(new_node, parent_path, attempt=True)

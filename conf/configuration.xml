@@ -23,5 +23,10 @@
             <hostname>ec2-35-91-126-153.us-west-2.compute.amazonaws.com</hostname>
             <port>10003</port>
         </datanode>
+        <datanode>
+            <id>datanode_4</id>
+            <hostname>ec2-35-91-126-153.us-west-2.compute.amazonaws.com</hostname>
+            <port>10004</port>
+        </datanode>
     </datanodes>
 </configuration>
