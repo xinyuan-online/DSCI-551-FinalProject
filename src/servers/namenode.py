@@ -6,6 +6,7 @@ import logging
 import requests
 import time
 from ..FSTree.FSTree import Inode, INodeError, FSTree, parse_path, INVALID_PATH_ERROR
+import os
 
 class NameNode():
     def __init__(self, hostname, port, blocksize, replicationfactor, datanode_info, home_path):
@@ -17,6 +18,18 @@ class NameNode():
         self.home_path = home_path
         # {id: [datanodes that hold the replica]}
         self.block_mapping = {}
+        folder = os.path.exists(f'{self.home_path}/logs')
+        if not folder:
+            os.mkdir(f'{self.home_path}/logs')
+
+        f = open(f'{self.home_path}/logs/namenode.log', "w")
+        f.write('')
+        f.close()
+
+        d = open(f'{self.home_path}/logs/datanode.log', "w")
+        d.write('')
+        d.close()
+
         logging.basicConfig(filename=f'{self.home_path}/logs/namenode.log', 
                             encoding='utf-8', level=logging.DEBUG)
         logging.info(self.datanodes_avaliable)
@@ -26,6 +39,7 @@ class NameNode():
         logging.info(f'Listening on port {self.info[1]}')
         app = web.Application(client_max_size=1024*1024*1000)
         app.add_routes([web.get('/ls', self.ls),
+                        web.get('/ls_html', self.ls_html),
                         web.put('/put', self.put),
                         web.put('/allocate', self.allocate_block),
                         web.put('/mkdir', self.mkdir),
@@ -111,6 +125,27 @@ class NameNode():
                         for x in found_node.childs]
             return web.Response(text=json.dumps(response))
 
+    async def ls_html(self, req):
+        '''
+            route: /ls?path={path_to_ls(urlencoded)}
+            return: metadata as text
+        '''
+        try:
+            path_to_ls = req.query['path']
+            path_lst = parse_path(path_to_ls)
+            found_node = self.fstree.find(path_lst)
+            if found_node.node_type != "DIRECTORY":
+                return web.Response(status=405, text="Target is not a directory")
+        except INodeError as e:
+            return web.Response(status=e.error_code, text=str(e))
+        else:
+            response = [{"name": x.node_name,
+                        "type": x.node_type,
+                        "replication": x.replication,
+                        "blocks": x.blocks
+                         }
+                        for x in found_node.childs]
+            return web.Response(text=json.dumps(response))
 
     async def get(self, req):
         try:
