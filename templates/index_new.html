@@ -101,6 +101,10 @@
         {% else %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
             <a href="{{ url_for('download_file', item_path=item['path']) }}">{{ item['name'] }}</a>
+            <a>{{item['block_num']}}</a>
+            <a>{{item['total_size']}}</a>
+            <a>{{item['block_id_1']}}</a>
+            <a>{{item['block_id_2']}}</a>
             <a href="{{ url_for('delete_item', item_path=item['path']) }}" class="badge badge-danger">[Delete]</a>
         </li>
         {% endif %}
