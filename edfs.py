@@ -38,7 +38,7 @@ class EdfsClient:
         self.namenode_session = None
         self.datanode_sessions = None
         self.handle_request_methods = {
-            "ls": self.handle_ls,
+            "ls": self.handle_ls_html,
             "put": self.handle_put,
             "mkdir": self.handle_mkdir,
             "rm": self.handle_rm,
@@ -97,7 +97,15 @@ class EdfsClient:
                 return 404, "Block broken"
         return 200, block_bytes
                     
-
+    async def handle_ls_html(self, path_to_ls):
+        #encoded_path_to_ls = urlencode(path_to_ls)
+        async with self.namenode_session.get('/ls_html', params={"path": path_to_ls}) as resp:
+            if resp.status != 200:
+                return resp.status, resp.text()
+            if FROM_SHELL:
+                return resp.status, '\t'.join([f"{x['name']}\t{x['replication']}\t{x['blocks']}" for x in json.loads(await resp.text())])
+            else:
+                return resp.status, await resp.text()
 
     async def handle_put(self, *args):
         return await self.put_single_file(*args)
