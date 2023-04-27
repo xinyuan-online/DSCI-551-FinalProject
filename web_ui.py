@@ -4,18 +4,15 @@ from quart import Quart, render_template, request, redirect, url_for, send_from_
 from io import BytesIO
 from quart import Response
 import shutil
-from edfs import EdfsClient
+from edfs import EdfsClient, get_config
 import logging
 import json
 from urllib.parse import quote_plus as urlquote
 from urllib.parse import unquote_plus as urlunquote
 
-
-    
 app = Quart(__name__)
 app.config.from_object(f"conf.Config.Config")
-
-
+homepath = os.path.dirname(os.path.realpath(__file__))
 
 def get_parent(unquoted_url):
     slash_index = unquoted_url.rfind('/')
@@ -29,10 +26,10 @@ def join_url(a, b):
 async def list_folder(folder_name):
     print(folder_name)
     code, folder_contents = await app.client.handle_user_request("ls", [folder_name])
+    print(folder_contents)
     if isinstance(folder_contents, str):
         return folder_contents, 404
     return jsonify(folder_contents)
-
 
 @app.context_processor
 def utility_processor():
@@ -41,7 +38,6 @@ def utility_processor():
     def unquote(url):
         return urlunquote(url)
     return dict(quote=quote, unquote=unquote)
-
 
 @app.route('/create_folder', methods=['POST'])
 async def create_folder():
@@ -65,7 +61,6 @@ async def delete_folder(item_path):
     parent = urlquote(get_parent(unquoted_path))
     return redirect(url_for('folder_contents', item_path=parent))
 
-
 @app.route("/delete/<item_path>")
 async def delete_item(item_path):
     unquoted_path = urlunquote(item_path)
@@ -75,16 +70,33 @@ async def delete_item(item_path):
     parent = urlquote(get_parent(unquoted_path))
     return redirect(url_for('folder_contents', item_path=parent))
 
-
 @app.route('/')
 async def index(path=""):
     code, resp = await app.client.handle_user_request("ls", ['/'])
+    def BKMG(size):
+        if size < 1024:
+            return str(size) + "B"
+        elif size > 1024 and size<1024*1024:
+            return str(int(size/1024)) + "KB"
+        elif size > 1024*1024 and size<1024*1024*1024:
+            return str(int(size/(1024*1024))) + "MB"
     
     folder_contents = json.loads(resp)
+    print(folder_contents)
+
+    namenode_info, datanode_info = get_config(homepath)
+    saving_path = datanode_info['storage']
+
     existing_files = [
         {
             "name": file['name'],
             "type": file['type'],
+            "block_num": len(file["blocks"]) if file["blocks"] else None,
+            "block_id_1": [(saving_path.text+"/datanode_1/" + str(block[0]) + "-r0", BKMG(block[1])) for block in file["blocks"]] if file["blocks"] else None,
+            "block_id_2": [(saving_path.text+"/datanode_1/" + str(block[0]) + "-r1", BKMG(block[1])) for block in file["blocks"]] if file[
+                "blocks"] else None,
+            "block_size": [block[1] for block in file["blocks"]] if isinstance(file["blocks"], list) else None,
+            "total_size": BKMG(sum([block[1] for block in file["blocks"]] if isinstance(file["blocks"], list) else [])),
             "path": urlquote("/" + file['name'])
         }
         for file in folder_contents
@@ -107,12 +119,29 @@ async def folder_contents(item_path):
     code, resp = await app.client.handle_user_request("ls", [unquoted_path])
     if code != 200:
         return resp, code
+    def BKMG(size):
+        if size < 1024:
+            return str(size) + "B"
+        elif size > 1024 and size<1024*1024:
+            return str(int(size/1024)) + "KB"
+        elif size > 1024*1024 and size<1024*1024*1024:
+            return str(int(size/(1024*1024))) + "MB"
     logging.info(resp)
     folder_contents = json.loads(resp)
+
+    namenode_info, datanode_info = get_config(homepath)
+    saving_path = datanode_info['storage']
+
     existing_files = [
         {
-            "name": file["name"],
-            "type": file["type"],
+            "name": file['name'],
+            "type": file['type'],
+            "block_num": len(file["blocks"]) if file["blocks"] else None,
+            "block_id_1": [(saving_path.text+"/datanode_1/" + str(block[0]) + "-r0", BKMG(block[1])) for block in file["blocks"]] if file["blocks"] else None,
+            "block_id_2": [(saving_path.text+"/datanode_1/" + str(block[0]) + "-r1", BKMG(block[1])) for block in file["blocks"]] if file[
+                "blocks"] else None,
+            "block_size": [block[1] for block in file["blocks"]] if isinstance(file["blocks"], list) else None,
+            "total_size": BKMG(sum([block[1] for block in file["blocks"]] if isinstance(file["blocks"], list) else [])),
             "path": urlquote(join_url(unquoted_path, file["name"]))  
         }
         for file in folder_contents
@@ -120,7 +149,6 @@ async def folder_contents(item_path):
     return await render_template(
         "index_new.html", existing_files=existing_files, folder_name=item_path
     )
-
 
 @app.route('/upload', methods=['POST'])
 async def upload_file():
@@ -137,9 +165,7 @@ async def upload_file():
             return resp, code
         return redirect(url_for('folder_contents', item_path=path))
 
-
     return "Invalid file or filename", 400
-
 
 @app.route('/download/<item_path>')
 async def download_file(item_path):
@@ -160,8 +186,5 @@ async def startup():
     app.client = EdfsClient()
     await app.client.initialize()
 
-
-    
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=4000)
+    app.run(debug=True)
