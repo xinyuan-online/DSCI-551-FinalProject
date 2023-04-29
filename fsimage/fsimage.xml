@@ -1,6 +1,6 @@
 <fsimage>
 	<INodeSection>
-		<lastInodeId>115</lastInodeId>
+		<lastInodeId>117</lastInodeId>
 		<numInodes>26</numInodes>
 		<lastBlockId>100682</lastBlockId>
 		<inode>
@@ -191,16 +191,9 @@
 			<name>francesca</name>
 		</inode>
 		<inode>
-			<id>101</id>
-			<type>FILE</type>
-			<name>create.sql</name>
-			<replication>3</replication>
-			<blocks>
-				<block>
-					<id>100672</id>
-					<numBytes>569</numBytes>
-				</block>
-			</blocks>
+			<id>116</id>
+			<type>DIRECTORY</type>
+			<name>test</name>
 		</inode>
 		<inode>
 			<id>102</id>
@@ -296,7 +289,10 @@
 		</directory>
 		<directory>
 			<parent>100</parent>
-			<child>101</child>
+			<child>116</child>
+		</directory>
+		<directory>
+			<parent>116</parent>
 		</directory>
 	</INodeDirectorySection>
 </fsimage>

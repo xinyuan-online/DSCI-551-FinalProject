@@ -1,6 +1,6 @@
 <configuration>
     <namenode>
-        <hostname>127.0.0.1</hostname>
+        <hostname>0.0.0.0</hostname>
         <port>10000</port>
         <blockSize>67108864</blockSize>
         <replicationFactor>3</replicationFactor>
@@ -10,12 +10,12 @@
         <localStorage>/home/ubuntu/datanodes</localStorage>
         <datanode>
             <id>datanode_1</id>
-            <hostname>127.0.0.1</hostname>
+            <hostname>0.0.0.0</hostname>
             <port>10001</port>
         </datanode>
         <datanode>
             <id>datanode_2</id>
-            <hostname>127.0.0.1</hostname>
+            <hostname>0.0.0.0</hostname>
             <port>10002</port>
         </datanode>
     </datanodes>

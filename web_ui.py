@@ -1,4 +1,5 @@
-import os
+#! /usr/bin/python3
+import os, sys
 import asyncio
 from quart import Quart, render_template, request, redirect, url_for, send_from_directory, jsonify
 from io import BytesIO
@@ -187,4 +188,12 @@ async def startup():
     await app.client.initialize()
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    if len(sys.argv) == 2:
+        if sys.argv[1] == 'local':
+            app.run(debug=True, host="127.0.0.1", port=5000)
+        elif sys.argv[1] == 'remote':
+            app.run(debug=True, host="0.0.0.0", port=5000)
+        else:
+            app.run(debug=True, host=sys.argv[1], port=5000)
+    else:
+        app.run(debug=True, host="0.0.0.0", port=5000)
