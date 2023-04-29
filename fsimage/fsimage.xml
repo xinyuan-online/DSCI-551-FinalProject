@@ -1,8 +1,8 @@
 <fsimage>
 	<INodeSection>
-		<lastInodeId>102</lastInodeId>
-		<numInodes>23</numInodes>
-		<lastBlockId>100673</lastBlockId>
+		<lastInodeId>115</lastInodeId>
+		<numInodes>26</numInodes>
+		<lastBlockId>100682</lastBlockId>
 		<inode>
 			<id>0</id>
 			<type>DIRECTORY</type>
@@ -202,6 +202,42 @@
 				</block>
 			</blocks>
 		</inode>
+		<inode>
+			<id>102</id>
+			<type>FILE</type>
+			<name>README.md</name>
+			<replication>3</replication>
+			<blocks>
+				<block>
+					<id>100673</id>
+					<numBytes>523</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>104</id>
+			<type>FILE</type>
+			<name>requirement.txt</name>
+			<replication>3</replication>
+			<blocks>
+				<block>
+					<id>100674</id>
+					<numBytes>1455</numBytes>
+				</block>
+			</blocks>
+		</inode>
+		<inode>
+			<id>110</id>
+			<type>FILE</type>
+			<name>start_dfs.py</name>
+			<replication>3</replication>
+			<blocks>
+				<block>
+					<id>100678</id>
+					<numBytes>1744</numBytes>
+				</block>
+			</blocks>
+		</inode>
 	</INodeSection>
 	<INodeDirectorySection>
 		<directory>
@@ -209,6 +245,9 @@
 			<child>78</child>
 			<child>99</child>
 			<child>100</child>
+			<child>102</child>
+			<child>104</child>
+			<child>110</child>
 		</directory>
 		<directory>
 			<parent>78</parent>

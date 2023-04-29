@@ -38,12 +38,14 @@ class EdfsClient:
         self.namenode_session = None
         self.datanode_sessions = None
         self.handle_request_methods = {
-            "ls": self.handle_ls_html,
+            "ls": self.handle_ls,
+            'ls_html': self.handle_ls_html,
             "put": self.handle_put,
             "mkdir": self.handle_mkdir,
             "rm": self.handle_rm,
             "rmdir": self.handle_rmdir,
-            "get": self.handle_get
+            "get": self.handle_get,
+            "cat": self.handle_cat
         }
         self.namenode_info = (namenode_info[0], namenode_info[1])
         self.datanodes_info = [(nodeid, (hostname, port))
@@ -75,7 +77,7 @@ class EdfsClient:
             else:
                 return resp.status, await resp.text()
 
-    async def handle_get(self, path_to_get):
+    async def handle_get(self, path_to_get, path_to_save=None):
         block_composition = []
         async with self.namenode_session.get('/get', params={"path": path_to_get}) as resp:
             resp_text = await resp.text()
@@ -95,8 +97,19 @@ class EdfsClient:
                     block_bytes += content
                     break
                 return 404, "Block broken"
+
+        if FROM_SHELL and path_to_save!=None:
+            filename = path_to_get[path_to_get.rfind('/')+1:]
+            with open(path_to_save + '/' + filename, 'wb') as getwriter:
+                getwriter.write(block_bytes)
+            return 200, "Successfully saved to local"
         return 200, block_bytes
                     
+    async def handle_cat(self, path_to_cat):
+        code, resp = await self.handle_get(path_to_cat)
+        return code, resp.decode()
+
+    
     async def handle_ls_html(self, path_to_ls):
         #encoded_path_to_ls = urlencode(path_to_ls)
         async with self.namenode_session.get('/ls_html', params={"path": path_to_ls}) as resp:
@@ -204,7 +217,8 @@ class EdfsClient:
         group.add_argument('-put', nargs=2)
         group.add_argument('-rm', nargs=1)
         group.add_argument('-rmdir', nargs=1)
-        group.add_argument('-get', nargs=1)
+        group.add_argument('-get', nargs=2)
+        group.add_argument('-cat', nargs=1)
         args = parser.parse_args().__dict__
         for k, v in args.items():
             if v == None:

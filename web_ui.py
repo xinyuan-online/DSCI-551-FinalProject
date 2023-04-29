@@ -25,7 +25,7 @@ def join_url(a, b):
 @app.route('/list_folder/<folder_name>')
 async def list_folder(folder_name):
     print(folder_name)
-    code, folder_contents = await app.client.handle_user_request("ls", [folder_name])
+    code, folder_contents = await app.client.handle_user_request("ls_html", [folder_name])
     print(folder_contents)
     if isinstance(folder_contents, str):
         return folder_contents, 404
@@ -72,14 +72,14 @@ async def delete_item(item_path):
 
 @app.route('/')
 async def index(path=""):
-    code, resp = await app.client.handle_user_request("ls", ['/'])
+    code, resp = await app.client.handle_user_request("ls_html", ['/'])
     def BKMG(size):
         if size < 1024:
             return str(size) + "B"
         elif size > 1024 and size<1024*1024:
             return str(int(size/1024)) + "KB"
         elif size > 1024*1024 and size<1024*1024*1024:
-            return str(int(size/(1024*1024))) + "MB"
+            return str(size//(1024*1024)) + "MB"
     
     folder_contents = json.loads(resp)
     print(folder_contents)
@@ -116,7 +116,7 @@ async def folder_contents(item_path):
     unquoted_path = urlunquote(item_path)
     if unquoted_path == '/':
         return redirect('/')
-    code, resp = await app.client.handle_user_request("ls", [unquoted_path])
+    code, resp = await app.client.handle_user_request("ls_html", [unquoted_path])
     if code != 200:
         return resp, code
     def BKMG(size):
@@ -187,4 +187,4 @@ async def startup():
     await app.client.initialize()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000)

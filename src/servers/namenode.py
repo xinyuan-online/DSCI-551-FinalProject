@@ -33,7 +33,7 @@ class NameNode():
         logging.basicConfig(filename=f'{self.home_path}/logs/namenode.log', 
                             encoding='utf-8', level=logging.DEBUG)
         logging.info(self.datanodes_avaliable)
-        self.fsimage_path = f"{self.home_path}/fsimage/fsimage_test.xml"
+        self.fsimage_path = f"{self.home_path}/fsimage/fsimage.xml"
 
     def launch_server(self):
         logging.info(f'Listening on port {self.info[1]}')
@@ -61,7 +61,10 @@ class NameNode():
         self.block_mapping = self.fstree.load_xml(self.fsimage_path)
         for datanode in self.datanodes_avaliable:
             url = f"http://{datanode[1]}:{datanode[2]}/blockreport"
-            resp = requests.get(url).json()
+            try:
+                resp = requests.get(url).json()
+            except:
+                pass
             for block_id in resp:
                 try:
                     self.block_mapping[int(block_id)].append(datanode[0])
@@ -272,7 +275,7 @@ class NameNode():
             
     def close_server(self):
         self.fstree.save_fs_to_fsimage(self.fsimage_path)
-        logging.info('Namenode metadata saved to fsimage_test.xml')
+        logging.info('Namenode metadata saved to fsimage.xml')
 
 def run_namenode(*args):
     namenode_instance = NameNode(*args)

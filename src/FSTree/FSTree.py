@@ -299,9 +299,3 @@ class FSTree:
 
 
 
-
-if __name__ == "__main__":
-    fs = FSTree()
-    fs.load_xml("fsimage_test.xml")
-    fs.save_fs_to_fsimage("fsimage_copy.xml")
-
